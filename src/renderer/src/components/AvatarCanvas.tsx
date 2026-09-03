@@ -35,17 +35,25 @@ export function AvatarCanvas({
   useEffect(() => {
     if (!canvasRef.current) return
     
-    // Create scene matching window size
+    // Create scene matching container size
+    const container = canvasRef.current.parentElement
+    const initialWidth = container?.clientWidth || window.innerWidth
+    const initialHeight = container?.clientHeight || window.innerHeight
+
     const scene = new VRMScene(
       canvasRef.current, 
-      window.innerWidth, 
-      window.innerHeight
+      initialWidth, 
+      initialHeight
     )
     sceneRef.current = scene
     
     // Handle resize
     const handleResize = () => {
-      scene.resize(window.innerWidth, window.innerHeight)
+      if (!canvasRef.current) return
+      const parent = canvasRef.current.parentElement
+      const w = parent?.clientWidth || window.innerWidth
+      const h = parent?.clientHeight || window.innerHeight
+      scene.resize(w, h)
     }
     window.addEventListener('resize', handleResize)
     
@@ -122,11 +130,11 @@ export function AvatarCanvas({
   }, [gesture])
   
   return (
-    <div className="avatar-container">
+    <div className="avatar-container" style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
       <canvas 
         ref={canvasRef} 
         className="avatar-canvas" 
-        style={{ width: '100vw', height: '100vh', display: 'block' }} 
+        style={{ width: '100%', height: '100%', display: 'block' }} 
       />
       
       {isLoading && (
