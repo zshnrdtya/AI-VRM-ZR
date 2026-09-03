@@ -42,6 +42,12 @@ export class VRMScene {
 
     // Lighting
     this.setupLighting()
+
+    // Mouse wheel zoom support (scroll to zoom in/out smoothly)
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault()
+      this.camera.position.z = Math.min(5.5, Math.max(2.0, this.camera.position.z + e.deltaY * 0.002))
+    }, { passive: false })
   }
 
   private setupLighting(): void {
@@ -103,10 +109,12 @@ export class VRMScene {
             const headPos = new THREE.Vector3()
             headNode.getWorldPosition(headPos)
             
-            // Frame for a half-body shot (from waist to above head)
-            // with enough horizontal width to see gestures
-            this.camera.position.set(0, headPos.y - 0.1, headPos.y > 0 ? headPos.y * 1.6 : 2.2)
-            this.camera.lookAt(0, headPos.y - 0.15, 0)
+            // Frame avatar nicely: dynamically calculate distance for portrait vs landscape
+            const targetY = headPos.y - 0.1
+            const aspect = this.camera.aspect
+            const baseZ = aspect < 1 ? 3.65 + (1 - aspect) * 1.6 : 3.65
+            this.camera.position.set(0, targetY, baseZ)
+            this.camera.lookAt(0, targetY, 0)
           }
 
           console.log('[VRMScene] Model loaded successfully')
@@ -171,7 +179,21 @@ export class VRMScene {
 
   /** Resize the renderer */
   resize(width: number, height: number): void {
-    this.camera.aspect = width / height
+    const aspect = width / height
+    this.camera.aspect = aspect
+
+    if (this.vrm) {
+      const headNode = this.vrm.humanoid?.getNormalizedBoneNode('head')
+      if (headNode) {
+        const headPos = new THREE.Vector3()
+        headNode.getWorldPosition(headPos)
+        const targetY = headPos.y - 0.1
+        const baseZ = aspect < 1 ? 3.65 + (1 - aspect) * 1.6 : 3.65
+        this.camera.position.set(0, targetY, baseZ)
+        this.camera.lookAt(0, targetY, 0)
+      }
+    }
+
     this.camera.updateProjectionMatrix()
     this.renderer.setSize(width, height)
   }
