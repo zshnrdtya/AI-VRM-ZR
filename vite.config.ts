@@ -7,7 +7,7 @@ function edgeTTSPlugin(env: Record<string, string>): Plugin {
   return {
     name: 'vite-plugin-edge-tts',
     configureServer(server) {
-      server.middlewares.use('/api/tts', async (req, res) => {
+      server.middlewares.use('/api/tts', async (req: any, res: any) => {
         try {
           const url = new URL(req.url || '', `http://${req.headers.host || 'localhost'}`)
           const text = url.searchParams.get('text') || ''
