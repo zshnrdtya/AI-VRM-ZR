@@ -1,0 +1,55 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# CUSTOM RULES: AI VTuber Desktop Assistant
+# ==========================================
+
+# Ignore 3D Models
+*.vrm
+*.gltf
+*.glb
+
+# Ignore AI Services & Providers (as requested)
+src/main/services/providers/
+src/main/services/agent/CodingAgentService.ts
+src/main/services/agent/GitService.ts
+src/main/services/AIServiceManager.ts
+src/main/services/types.ts
+
+# Ignore electron-vite build output
+out/
+dist/
+release/
+
+# Ignore PRD
+PRD_AI_VTuber_Desktop_Assistant_v0.1.md
+PRD_Airi_Coding_Agent_Mode_v0.1.md
