@@ -20,9 +20,21 @@ export class LipSyncController {
   
   private isConnected = false
   private smoothingFactor = 0.15 // Lower = smoother and more natural
+  private isSpeakingSimulation = false
+  private simPhase = 0
 
   constructor(vrm: VRM) {
     this.vrm = vrm
+  }
+
+  /**
+   * Set speaking state for simulation when Web Audio API analyser is not connected (e.g. SpeechSynthesis)
+   */
+  setSpeaking(speaking: boolean): void {
+    this.isSpeakingSimulation = speaking
+    if (!speaking) {
+      this.reset()
+    }
   }
 
   /**
@@ -76,8 +88,18 @@ export class LipSyncController {
    * Update — called each frame
    * Analyzes audio frequency and maps to A/I/U/E/O
    */
-  update(_delta: number): void {
+  update(delta: number): void {
     if (!this.isConnected || !this.analyser || !this.vrm.expressionManager) {
+      if (this.isSpeakingSimulation && this.vrm.expressionManager) {
+        this.simPhase += delta * 12
+        const targetA = Math.max(0, Math.sin(this.simPhase) * 0.65)
+        const targetI = Math.max(0, Math.cos(this.simPhase * 0.8) * 0.25)
+        this.currentA = this.lerp(this.currentA, targetA, 0.2)
+        this.currentI = this.lerp(this.currentI, targetI, 0.2)
+        this.applyBlendShapes()
+      } else if (!this.isConnected) {
+        this.reset()
+      }
       return
     }
 
