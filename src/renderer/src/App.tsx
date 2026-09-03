@@ -344,7 +344,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 zIndex: 50,
                 transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
                 boxShadow: isSidebarOpen ? '8px 0 32px rgba(0,0,0,0.7)' : 'none',
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                paddingTop: 'max(10px, env(safe-area-inset-top, 0px))',
+                paddingBottom: 'max(16px, env(safe-area-inset-bottom, 0px))'
               }
             : {
                 position: 'relative',
@@ -438,9 +440,11 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
           {/* Top Header */}
           <header style={{
             ...styles.header,
-            padding: isMobile ? '0 14px' : '0 28px',
-            height: isMobile ? '56px' : '64px',
-            minHeight: isMobile ? '56px' : '64px'
+            paddingTop: isMobile ? 'max(6px, env(safe-area-inset-top, 0px))' : '0',
+            paddingLeft: isMobile ? '14px' : '28px',
+            paddingRight: isMobile ? '14px' : '28px',
+            height: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px',
+            minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
           }}>
             <div style={styles.headerLeft}>
               {isMobile && (
@@ -546,7 +550,12 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
           {/* Bottom Control Bar */}
           <footer style={{
             ...styles.footerBar,
-            padding: isMobile ? '8px 12px 14px' : '14px 24px 22px'
+            paddingTop: isMobile ? '10px' : '14px',
+            paddingLeft: isMobile ? '14px' : '24px',
+            paddingRight: isMobile ? '14px' : '24px',
+            paddingBottom: isMobile
+              ? 'max(30px, calc(18px + env(safe-area-inset-bottom, 0px)))'
+              : 'calc(18px + env(safe-area-inset-bottom, 0px))'
           }}>
             {/* Status Hint */}
             <div style={{
@@ -620,9 +629,11 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
           {/* Header */}
           <header style={{
             ...styles.header,
-            padding: isMobile ? '0 14px' : '0 28px',
-            height: isMobile ? '56px' : '64px',
-            minHeight: isMobile ? '56px' : '64px'
+            paddingTop: isMobile ? 'max(6px, env(safe-area-inset-top, 0px))' : '0',
+            paddingLeft: isMobile ? '14px' : '28px',
+            paddingRight: isMobile ? '14px' : '28px',
+            height: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px',
+            minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
           }}>
             <div style={styles.headerLeft}>
               {isMobile && (
@@ -660,7 +671,10 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
           {/* Scrollable About & Guide Content */}
           <div style={{
             ...styles.aboutScrollArea,
-            padding: isMobile ? '16px 14px 24px' : '28px 36px'
+            paddingTop: isMobile ? '16px' : '28px',
+            paddingLeft: isMobile ? '14px' : '36px',
+            paddingRight: isMobile ? '14px' : '36px',
+            paddingBottom: isMobile ? 'max(40px, calc(20px + env(safe-area-inset-bottom, 0px)))' : '36px'
           }}>
             <div style={styles.aboutContainer}>
               {/* Creator Card */}
@@ -815,8 +829,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: 0,
     right: 0,
     bottom: 0,
-    width: '100vw',
-    height: '100vh',
+    width: '100%',
+    height: '100%',
     backgroundColor: '#070b15',
     color: '#ffffff',
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
