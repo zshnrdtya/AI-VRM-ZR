@@ -618,6 +618,21 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 Kirim
               </button>
             </div>
+
+            {/* Watermark Branding */}
+            <div style={styles.watermarkContainer}>
+              <a
+                href="https://radityarz.my.id"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  ...styles.watermarkLink,
+                  fontSize: isMobile ? '10px' : '11.5px'
+                }}
+              >
+                Developed with 💙 by <span style={{ color: 'rgba(147, 197, 253, 0.9)', fontWeight: 600 }}>Raditya Rai Zeeshan</span>
+              </a>
+            </div>
           </footer>
         </div>
 
@@ -810,6 +825,21 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   <span style={styles.techBadge}>Microsoft Edge Neural TTS</span>
                   <span style={styles.techBadge}>Web Audio API & STT</span>
                 </div>
+              </div>
+
+              {/* Watermark in About Tab */}
+              <div style={{ ...styles.watermarkContainer, marginTop: '8px', paddingBottom: '16px' }}>
+                <a
+                  href="https://radityarz.my.id"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    ...styles.watermarkLink,
+                    fontSize: isMobile ? '11px' : '12px'
+                  }}
+                >
+                  Developed with 💙 by <span style={{ color: 'rgba(147, 197, 253, 0.9)', fontWeight: 600 }}>Raditya Rai Zeeshan</span>
+                </a>
               </div>
             </div>
           </div>
@@ -1307,5 +1337,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 500,
     padding: '5px 10px',
     borderRadius: '6px'
+  },
+  watermarkContainer: {
+    marginTop: '6px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    pointerEvents: 'auto'
+  },
+  watermarkLink: {
+    color: 'rgba(148, 163, 184, 0.45)',
+    textDecoration: 'none',
+    letterSpacing: '0.3px',
+    transition: 'color 0.2s ease',
+    cursor: 'pointer'
   }
 }
