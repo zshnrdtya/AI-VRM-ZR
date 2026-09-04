@@ -981,10 +981,15 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   }}>
                     <div style={styles.guideIcon}>🤖</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>1. Mode AI Asisten Virtual (Avatar 3D & Suara)</h4>
+                      <h4 style={styles.guideHeading}>1. Mode AI Asisten Virtual (Avatar 3D & Suara Natural)</h4>
                       <p style={styles.guideText}>
-                        Nikmati interaksi visual bersama avatar 3D anime interaktif lengkap dengan ekspresi wajah, gestur dinamis, dan gerakan bibir (<em>lip-sync</em>) yang sinkron. Anda dapat berbicara langsung menggunakan tombol <strong>Mikrofon (🎙️)</strong> atau mengetik pesan di bar bagian bawah.
+                        Rasakan pengalaman interaksi virtual yang hidup bersama avatar 3D anime interaktif berbasis model <strong>Pixiv VRM</strong>. Avatar dilengkapi dengan simulasi bernafas alami (<em>idle</em>), kedipan mata otomatis (<em>blink</em>), ekspresi wajah responsif (senang, terkejut, rileks), serta gestur dinamis.
                       </p>
+                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.6' }}>
+                        <li><strong>Percakapan Suara Real-Time:</strong> Tekan tombol <strong>Mikrofon (🎙️)</strong> di bar kontrol bawah untuk berbicara langsung dalam bahasa Indonesia.</li>
+                        <li><strong>Sintesis Suara & Lip-Sync:</strong> Zeera merespon dengan suara natural <em>Microsoft Edge Neural TTS (id-ID-GadisNeural)</em> yang dipadukan dengan sinkronisasi gerakan bibir (<em>Lip-Sync</em>) presisi via Web Audio API.</li>
+                        <li><strong>Input Teks Cepat:</strong> Anda juga dapat mengetik pesan singkat di kotak input bawah dan menekan Enter.</li>
+                      </ul>
                     </div>
                   </div>
 
@@ -993,13 +998,13 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     ...styles.guideItem,
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px',
-                    borderColor: 'rgba(59, 130, 246, 0.3)',
-                    backgroundColor: 'rgba(15, 23, 42, 0.75)'
+                    borderColor: 'rgba(59, 130, 246, 0.35)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.8)'
                   }}>
                     <div style={{ ...styles.guideIcon, backgroundColor: 'rgba(37, 99, 235, 0.25)' }}>💬</div>
                     <div style={styles.guideContent}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <h4 style={{ ...styles.guideHeading, margin: 0 }}>2. Mode AI Text Chat</h4>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                        <h4 style={{ ...styles.guideHeading, margin: 0 }}>2. Mode AI Text Chat & Manajemen Sesi (Local-First)</h4>
                         <span style={{
                           fontSize: '10px',
                           fontWeight: 700,
@@ -1010,12 +1015,15 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                         }}>FITUR TERBARU</span>
                       </div>
                       <p style={styles.guideText}>
-                        Ruang obrolan teks berdesain <em>dark mode</em> modern ala ChatGPT. Mode ini beroperasi secara hening (<strong>tanpa suara TTS</strong>), sangat ideal ketika Anda berada di ruang publik atau menginginkan jawaban teks yang panjang, terstruktur, dan mendalam.
+                        Ruang obrolan teks modern bertema <em>Dark Navy</em> ala ChatGPT yang ditenagai oleh <strong>Google Gemini AI (gemini-3.1-flash-lite)</strong>. Mode ini beroperasi dalam format teks murni tanpa suara (<em>silent mode</em>), ideal untuk kebutuhan belajar, coding, diskusi panjang, atau saat berada di ruang publik.
                       </p>
-                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.6' }}>
-                        <li><strong>Riwayat Percakapan (Session History):</strong> Zeera mengingat konteks obrolan Anda sebelumnya dalam satu sesi.</li>
-                        <li><strong>Pintasan Keyboard:</strong> Tekan <strong>Enter</strong> untuk mengirim pesan, atau <strong>Shift + Enter</strong> untuk membuat baris baru.</li>
-                        <li><strong>Tombol Bersihkan (🗑️):</strong> Reset riwayat percakapan kapan saja untuk memulai topik pembicaraan baru.</li>
+                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.65' }}>
+                        <li><strong>Penyimpanan Persisten (IndexedDB):</strong> Riwayat percakapan Anda otomatis tersimpan di memori browser secara <em>local-first</em> menggunakan database Dexie. Riwayat tidak akan hilang meskipun Anda merefresh browser, serta menjamin privasi penuh tanpa perlu server database terpisah.</li>
+                        <li><strong>Daftar Riwayat di Sidebar:</strong> Semua percakapan yang pernah Anda lakukan tercatat rapi di panel samping kiri dan dapat diakses kembali kapan saja.</li>
+                        <li><strong>Fitur Auto-Title Otomatis:</strong> Saat Anda memulai obrolan baru, sistem secara cerdas menamai judul percakapan dari kalimat pembuka Anda.</li>
+                        <li><strong>Navigasi Chat Baru Instan:</strong> Mengklik menu utama <strong>AI Text Chat</strong> di sidebar atau tombol <strong>+ Baru</strong> akan selalu membuka lembar obrolan baru (0 pesan), sehingga Anda bebas memulai topik baru tanpa menimpa sesi lama.</li>
+                        <li><strong>Pintasan Keyboard Efisien:</strong> Tekan <strong>Enter</strong> untuk mengirim pesan, atau <strong>Shift + Enter</strong> untuk menyisipkan baris baru di textarea.</li>
+                        <li><strong>Manajemen & Hapus Sesi:</strong> Hapus obrolan yang tidak diperlukan melalui tombol <strong>✕</strong> di daftar riwayat sidebar atau tombol <strong>🗑️ Hapus Chat</strong> di header.</li>
                       </ul>
                     </div>
                   </div>
@@ -1028,9 +1036,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   }}>
                     <div style={styles.guideIcon}>⚡</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>3. Perpindahan Tab Mulus & Efisien</h4>
+                      <h4 style={styles.guideHeading}>3. Arsitektur Performa Tanpa Reload (CSS-Based Multi-Stage)</h4>
                       <p style={styles.guideText}>
-                        Sistem navigasi dirancang dengan arsitektur memori cerdas. Berpindah antara menu <strong>AI Asisten Virtual</strong> dan <strong>AI Text Chat</strong> berlangsung instan tanpa me-reload model karakter 3D atau merusak WebGL Canvas. Suara avatar juga otomatis dihentikan saat Anda berpindah tab agar tidak mengganggu.
+                        Sistem navigasi dirancang dengan arsitektur performa tinggi. Berpindah antara mode <strong>AI Asisten Virtual</strong>, <strong>AI Text Chat</strong>, dan <strong>Panduan</strong> berjalan seketika tanpa perlu me-reload model karakter 3D atau merusak WebGL Context Three.js. Suara TTS juga otomatis dihentikan saat Anda berpindah ke mode teks demi menjaga ketenangan Anda.
                       </p>
                     </div>
                   </div>
@@ -1043,9 +1051,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   }}>
                     <div style={styles.guideIcon}>📱</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>4. Tampilan Responsif Smartphone</h4>
+                      <h4 style={styles.guideHeading}>4. Tampilan Responsif Layar Smartphone</h4>
                       <p style={styles.guideText}>
-                        Zeera AI dapat digunakan secara optimal di perangkat mobile. Menu sidebar dapat dibuka melalui tombol hamburger (<strong>☰</strong>) di kiri atas, dan tampilan antarmuka secara otomatis menyesuaikan orientasi layar Anda.
+                        Antarmuka Zeera AI sepenuhnya adaptif untuk perangkat ponsel cerdas dan tablet. Pada layar mobile, sidebar navigasi berubah menjadi menu geser (<em>drawer overlay</em>) yang dapat dibuka melalui tombol hamburger (<strong>☰</strong>) di pojok kiri atas, dan kamera panggung 3D secara otomatis menyesuaikan rasio vertikal layar.
                       </p>
                     </div>
                   </div>
@@ -1058,9 +1066,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   }}>
                     <div style={styles.guideIcon}>💡</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>5. Tips Berinteraksi</h4>
+                      <h4 style={styles.guideHeading}>5. Tips Berinteraksi dengan Zeera AI</h4>
                       <p style={styles.guideText}>
-                        Zeera diprogram dengan kepribadian yang ceria, ramah, dan solutif layaknya teman akrab. Cobalah menyapa <em>&ldquo;Halo Zeera!&rdquo;</em>, meminta saran kreatif, membahas teknologi, atau sekadar berbagi cerita santai.
+                        Zeera diprogram dengan kepribadian yang ceria, ramah, santai, dan solutif layaknya teman akrab. Anda dapat menyapa santai, meminta saran kreatif, membahas pemrograman, berdiskusi topik sains, atau meminta Zeera menceritakan lelucon menghibur.
                       </p>
                     </div>
                   </div>
@@ -1081,13 +1089,18 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   <span style={styles.techBadge}>React 18</span>
                   <span style={styles.techBadge}>Vite 5</span>
                   <span style={styles.techBadge}>TypeScript</span>
-                  <span style={styles.techBadge}>Three.js</span>
+                  <span style={styles.techBadge}>Three.js (WebGL)</span>
                   <span style={styles.techBadge}>Pixiv Three-VRM</span>
-                  <span style={styles.techBadge}>Google Gemini AI</span>
+                  <span style={styles.techBadge}>Google Gemini AI (gemini-3.1-flash-lite)</span>
+                  <span style={styles.techBadge}>IndexedDB & Dexie.js</span>
+                  <span style={styles.techBadge}>dexie-react-hooks (Live Queries)</span>
+                  <span style={styles.techBadge}>Local-First Architecture</span>
+                  <span style={styles.techBadge}>Auto-Title Session Engine</span>
                   <span style={styles.techBadge}>ChatGPT-Style Chat UI</span>
-                  <span style={styles.techBadge}>Multi-Turn Memory</span>
-                  <span style={styles.techBadge}>Microsoft Edge Neural TTS</span>
-                  <span style={styles.techBadge}>Web Audio API & STT</span>
+                  <span style={styles.techBadge}>Multi-Turn Conversation Memory</span>
+                  <span style={styles.techBadge}>Microsoft Edge Neural TTS (GadisNeural)</span>
+                  <span style={styles.techBadge}>Web Audio API (Realtime Lip-Sync)</span>
+                  <span style={styles.techBadge}>Web Speech Recognition (Browser STT)</span>
                 </div>
               </div>
 
