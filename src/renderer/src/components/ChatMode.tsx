@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db, MessageItem } from '../lib/db'
 import LOGO_URL from '../assets/logo-zz.png'
-
-interface ChatMessage {
-  id: string
-  role: 'user' | 'assistant'
-  text: string
-  timestamp: string
-}
 
 interface ChatModeProps {
   isMobile: boolean
   onOpenSidebar: () => void
+  activeSessionId: string
+  onSessionChange: (id: string) => void
+  onCreateNewSession: () => void
 }
 
 // Model prioritas untuk text chat (gemini-3.1-flash-lite sangat cepat dan stabil)
@@ -22,21 +20,50 @@ const TEXT_MODELS = [
   'gemini-flash-lite-latest'
 ]
 
-export const ChatMode: React.FC<ChatModeProps> = ({ isMobile, onOpenSidebar }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      text: 'Halo! Aku Zeera di ruang percakapan teks. Tanyakan apa saja padaku, dan aku akan menjawab secara lengkap dalam format teks tanpa suara.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
-  ])
+export const ChatMode: React.FC<ChatModeProps> = ({
+  isMobile,
+  onOpenSidebar,
+  activeSessionId,
+  onSessionChange,
+  onCreateNewSession
+}) => {
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Riwayat obrolan sesi untuk konteks Gemini
   const conversationHistoryRef = useRef<{ role: 'user' | 'model'; parts: [{ text: string }] }[]>([])
+
+  // Muat riwayat pesan secara reaktif dari IndexedDB berdasarkan activeSessionId
+  const messages: MessageItem[] = useLiveQuery(
+    async () => {
+      if (!activeSessionId) return []
+      const list = await db.messages.where('sessionId').equals(activeSessionId).toArray()
+      return list.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+    },
+    [activeSessionId],
+    []
+  ) || []
+
+  // Sinkronisasi riwayat obrolan multi-turn ke conversationHistoryRef untuk konteks Gemini
+  useEffect(() => {
+    if (messages && messages.length > 0) {
+      const history: { role: 'user' | 'model'; parts: [{ text: string }] }[] = []
+      for (const msg of messages) {
+        if (msg.role === 'user') {
+          history.push({ role: 'user', parts: [{ text: msg.text }] })
+        } else if (msg.role === 'assistant') {
+          // Aturan Gemini API: pesan pertama di history harus ber-role 'user'
+          if (history.length > 0) {
+            history.push({ role: 'model', parts: [{ text: msg.text }] })
+          }
+        }
+      }
+      conversationHistoryRef.current = history.slice(-20)
+    } else {
+      conversationHistoryRef.current = []
+    }
+  }, [messages])
 
   // Auto-scroll ke pesan terbaru
   useEffect(() => {
@@ -45,30 +72,49 @@ export const ChatMode: React.FC<ChatModeProps> = ({ isMobile, onOpenSidebar }) =
 
   const handleSendMessage = async () => {
     const text = inputMessage.trim()
-    if (!text || isLoading) return
+    if (!text || isLoading || !activeSessionId) return
 
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      text: text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const now = Date.now()
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const userMsgId = 'msg_' + now + '_' + Math.random().toString(36).substring(2, 7)
+
+    // 1. Simpan pesan pengguna langsung ke IndexedDB
+    try {
+      await db.messages.add({
+        id: userMsgId,
+        sessionId: activeSessionId,
+        role: 'user',
+        text: text,
+        timestamp: timeStr,
+        createdAt: now
+      })
+
+      // Fitur Auto-Title: Jika judul sesi masih default "Percakapan Baru", update dengan 3-5 kata pertama
+      const currentSession = await db.sessions.get(activeSessionId)
+      if (currentSession && (currentSession.title === 'Percakapan Baru' || !currentSession.title)) {
+        const words = text.trim().split(/\s+/).slice(0, 5).join(' ')
+        const newTitle = words.length > 28 ? words.substring(0, 28) + '...' : words
+        await db.sessions.update(activeSessionId, { title: newTitle, updatedAt: now })
+      } else {
+        await db.sessions.update(activeSessionId, { updatedAt: now })
+      }
+    } catch (dbErr) {
+      console.error('[Zeera DB] Gagal menyimpan pesan user:', dbErr)
     }
 
-    setMessages((prev) => [...prev, userMsg])
     setInputMessage('')
     setIsLoading(true)
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
     if (!apiKey) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          text: '⚠️ Kunci VITE_GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Mohon periksa kembali.',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ])
+      await db.messages.add({
+        id: 'err_' + Date.now(),
+        sessionId: activeSessionId,
+        role: 'assistant',
+        text: '⚠️ Kunci VITE_GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Mohon periksa kembali.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: Date.now()
+      })
       setIsLoading(false)
       return
     }
@@ -95,7 +141,7 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
 
           const sendPromise = chatSession.sendMessage(text)
           const timeoutPromise = new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error(`Timeout pada model ${modelName}`)), 10000)
+            setTimeout(() => reject(new Error(`Timeout pada model ${modelName}`)), 12000)
           )
 
           const result = await Promise.race([sendPromise, timeoutPromise])
@@ -111,51 +157,52 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
         throw lastError || new Error('Gagal mendapatkan respon dari server Gemini.')
       }
 
-      // Simpan riwayat chat yang sukses
-      conversationHistoryRef.current.push({ role: 'user', parts: [{ text }] })
-      conversationHistoryRef.current.push({ role: 'model', parts: [{ text: aiReply }] })
-
-      if (conversationHistoryRef.current.length > 20) {
-        conversationHistoryRef.current = conversationHistoryRef.current.slice(-20)
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 2).toString(),
-          role: 'assistant',
-          text: aiReply,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ])
+      // 2. Simpan balasan AI ke IndexedDB
+      const aiNow = Date.now()
+      await db.messages.add({
+        id: 'ai_' + aiNow + '_' + Math.random().toString(36).substring(2, 7),
+        sessionId: activeSessionId,
+        role: 'assistant',
+        text: aiReply,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: aiNow
+      })
+      await db.sessions.update(activeSessionId, { updatedAt: aiNow })
     } catch (err: any) {
       console.error('[Zeera Text Chat] Error detail:', err)
       const errorDetail = err?.message || 'Koneksi ke server AI terganggu.'
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 2).toString(),
-          role: 'assistant',
-          text: `Maaf, sepertinya sedang ada kendala: ${errorDetail}`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ])
+      await db.messages.add({
+        id: 'err_' + Date.now(),
+        sessionId: activeSessionId,
+        role: 'assistant',
+        text: `Maaf, sepertinya sedang ada kendala: ${errorDetail}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: Date.now()
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleClearChat = () => {
-    if (confirm('Bersihkan riwayat percakapan teks?')) {
-      conversationHistoryRef.current = []
-      setMessages([
-        {
-          id: 'cleared',
-          role: 'assistant',
-          text: 'Percakapan telah dibersihkan. Ada topik baru yang ingin kita diskusikan?',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  // Hapus seluruh sesi ini dari database
+  const handleDeleteCurrentChat = async () => {
+    if (!activeSessionId) return
+    if (confirm('Hapus percakapan ini secara permanen?')) {
+      try {
+        await db.messages.where('sessionId').equals(activeSessionId).delete()
+        await db.sessions.delete(activeSessionId)
+        conversationHistoryRef.current = []
+
+        // Beralih ke sesi lain yang tersedia, atau buat sesi baru
+        const remaining = await db.sessions.orderBy('updatedAt').reverse().first()
+        if (remaining) {
+          onSessionChange(remaining.id)
+        } else {
+          onCreateNewSession()
         }
-      ])
+      } catch (err) {
+        console.error('[Zeera DB] Gagal menghapus sesi:', err)
+      }
     }
   }
 
@@ -182,13 +229,16 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
             <h1 style={{ ...chatStyles.title, fontSize: isMobile ? '15px' : '17px' }}>
               Zeera Text Chat
             </h1>
-            <span style={chatStyles.subtitle}>Mode Teks Percakapan (No TTS)</span>
+            <span style={chatStyles.subtitle}>Local-First Persistent Chat (No TTS)</span>
           </div>
         </div>
 
         <div style={chatStyles.headerRight}>
-          <button onClick={handleClearChat} style={chatStyles.clearBtn} title="Bersihkan Chat">
-            🗑️ Bersihkan
+          <button onClick={onCreateNewSession} style={chatStyles.newChatBtn} title="Mulai Percakapan Baru">
+            ➕ Chat Baru
+          </button>
+          <button onClick={handleDeleteCurrentChat} style={chatStyles.clearBtn} title="Hapus Percakapan Ini">
+            🗑️ Hapus Chat
           </button>
         </div>
       </header>
@@ -317,7 +367,8 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   },
   headerRight: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    gap: '8px'
   },
   hamburgerBtn: {
     backgroundColor: 'rgba(30, 41, 59, 0.6)',
@@ -332,11 +383,25 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     cursor: 'pointer'
   },
+  newChatBtn: {
+    backgroundColor: 'rgba(37, 99, 235, 0.22)',
+    border: '1px solid rgba(59, 130, 246, 0.4)',
+    color: '#93c5fd',
+    padding: '6px 12px',
+    borderRadius: '8px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px'
+  },
   clearBtn: {
     backgroundColor: 'rgba(30, 41, 59, 0.7)',
     border: '1px solid rgba(255, 255, 255, 0.12)',
     color: '#cbd5e1',
-    padding: '6px 14px',
+    padding: '6px 12px',
     borderRadius: '8px',
     fontSize: '12px',
     cursor: 'pointer',

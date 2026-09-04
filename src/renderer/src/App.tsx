@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db, SessionItem } from './lib/db'
 import { Emotion, AppStatus } from '../../shared/types'
 import { AvatarCanvas } from './components/AvatarCanvas'
 import { ChatMode } from './components/ChatMode'
@@ -9,11 +11,152 @@ import MODEL_URL from './assets/model.vrm?url'
 import LOGO_URL from './assets/logo-zz.png'
 
 type NavTab = 'assistant' | 'chat' | 'about'
+const STORAGE_KEY = 'zeera_active_session_id'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('assistant')
+  const [activeSessionId, setActiveSessionId] = useState<string>(() => {
+    return localStorage.getItem(STORAGE_KEY) || ''
+  })
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  // Ambil seluruh daftar sesi dari IndexedDB secara reaktif
+  const sessions: SessionItem[] = useLiveQuery(
+    () => db.sessions.orderBy('updatedAt').reverse().toArray(),
+    [],
+    []
+  ) || []
+
+  // Pastikan selalu ada minimal 1 sesi percakapan bersih saat aplikasi dibuka
+  useEffect(() => {
+    const ensureSession = async () => {
+      try {
+        const allSessions = await db.sessions.orderBy('updatedAt').reverse().toArray()
+        let emptySession: SessionItem | null = null
+
+        // Cari sesi yang masih benar-benar kosong (0 pesan dari pengguna)
+        for (const s of allSessions) {
+          const userMsgCount = await db.messages
+            .where('sessionId')
+            .equals(s.id)
+            .filter((m) => m.role === 'user')
+            .count()
+          if (userMsgCount === 0) {
+            emptySession = s
+            break
+          }
+        }
+
+        if (emptySession) {
+          setActiveSessionId(emptySession.id)
+          localStorage.setItem(STORAGE_KEY, emptySession.id)
+        } else {
+          // Buat sesi kosong awal
+          const newId = 'session_' + Date.now()
+          const now = Date.now()
+          await db.sessions.add({
+            id: newId,
+            title: 'Percakapan Baru',
+            createdAt: now,
+            updatedAt: now
+          })
+          await db.messages.add({
+            id: 'welcome_' + now,
+            sessionId: newId,
+            role: 'assistant',
+            text: 'Halo! Aku Zeera di ruang percakapan teks. Tanyakan apa saja padaku, dan aku akan menjawab secara lengkap dalam format teks tanpa suara.',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            createdAt: now
+          })
+          setActiveSessionId(newId)
+          localStorage.setItem(STORAGE_KEY, newId)
+        }
+      } catch (err) {
+        console.error('[Zeera DB] Error ensureSession:', err)
+      }
+    }
+    ensureSession()
+  }, [])
+
+  const handleSelectSession = (sessionId: string) => {
+    setActiveSessionId(sessionId)
+    localStorage.setItem(STORAGE_KEY, sessionId)
+    handleTabChange('chat')
+  }
+
+  // Mulai sesi chat baru: selalu buka sesi yang benar-benar bersih (0 pesan user)
+  const handleStartNewChat = async () => {
+    try {
+      // 1. Jika activeSessionId saat ini sudah benar-benar kosong (0 pesan user), langsung gunakan
+      if (activeSessionId) {
+        const currentSession = await db.sessions.get(activeSessionId)
+        if (currentSession) {
+          const userMsgCount = await db.messages
+            .where('sessionId')
+            .equals(activeSessionId)
+            .filter((m) => m.role === 'user')
+            .count()
+          if (userMsgCount === 0) {
+            handleTabChange('chat')
+            return
+          }
+        }
+      }
+
+      // 2. Cari apakah ada sesi lain di database yang masih kosong (0 pesan user)
+      const allSessions = await db.sessions.orderBy('updatedAt').reverse().toArray()
+      for (const s of allSessions) {
+        const count = await db.messages
+          .where('sessionId')
+          .equals(s.id)
+          .filter((m) => m.role === 'user')
+          .count()
+        if (count === 0) {
+          setActiveSessionId(s.id)
+          localStorage.setItem(STORAGE_KEY, s.id)
+          handleTabChange('chat')
+          return
+        }
+      }
+
+      // 3. Jika semua sesi sudah ada percakapannya, buat sesi baru yang benar-benar 0
+      const newId = 'session_' + Date.now()
+      const now = Date.now()
+      await db.sessions.add({
+        id: newId,
+        title: 'Percakapan Baru',
+        createdAt: now,
+        updatedAt: now
+      })
+      await db.messages.add({
+        id: 'welcome_' + now,
+        sessionId: newId,
+        role: 'assistant',
+        text: 'Halo! Aku Zeera di ruang percakapan teks. Tanyakan apa saja padaku, dan aku akan menjawab secara lengkap dalam format teks tanpa suara.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: now
+      })
+
+      setActiveSessionId(newId)
+      localStorage.setItem(STORAGE_KEY, newId)
+      handleTabChange('chat')
+    } catch (err) {
+      console.error('[Zeera DB] Error handleStartNewChat:', err)
+      handleTabChange('chat')
+    }
+  }
+
+  const handleDeleteSession = async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation()
+    if (confirm('Hapus sesi percakapan ini?')) {
+      await db.messages.where('sessionId').equals(sessionId).delete()
+      await db.sessions.delete(sessionId)
+      if (activeSessionId === sessionId) {
+        handleStartNewChat()
+      }
+    }
+  }
 
   const [emotion, setEmotion] = useState<Emotion>('neutral')
   const [gesture, setGesture] = useState<string>('none')
@@ -387,7 +530,7 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
         <nav style={styles.navMenu}>
           {/* Menu 1: AI Text Chat */}
           <button
-            onClick={() => handleTabChange('chat')}
+            onClick={handleStartNewChat}
             style={{
               ...styles.navItem,
               ...(activeTab === 'chat' ? styles.navItemActive : {})
@@ -430,6 +573,52 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
             </div>
           </button>
         </nav>
+
+        {/* Riwayat Chat Section */}
+        <div style={styles.historySection}>
+          <div style={styles.historyHeader}>
+            <span style={styles.historyTitle}>Riwayat Chat</span>
+            <button
+              onClick={handleStartNewChat}
+              style={styles.newChatMiniBtn}
+              title="Buat Sesi Chat Baru"
+            >
+              + Baru
+            </button>
+          </div>
+          <div style={styles.historyList}>
+            {sessions.filter((s) => s.title !== 'Percakapan Baru').length === 0 ? (
+              <div style={styles.historyEmpty}>Belum ada riwayat</div>
+            ) : (
+              sessions
+                .filter((s) => s.title !== 'Percakapan Baru')
+                .map((sess) => {
+                  const isActive = activeTab === 'chat' && activeSessionId === sess.id
+                  return (
+                    <div
+                      key={sess.id}
+                      onClick={() => handleSelectSession(sess.id)}
+                      style={{
+                        ...styles.historyItem,
+                        ...(isActive ? styles.historyItemActive : {})
+                      }}
+                      title={sess.title}
+                    >
+                      <span style={styles.historyItemIcon}>💭</span>
+                      <span style={styles.historyItemText}>{sess.title}</span>
+                      <button
+                        onClick={(e) => handleDeleteSession(e, sess.id)}
+                        style={styles.historyDeleteBtn}
+                        title="Hapus percakapan ini"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )
+                })
+            )}
+          </div>
+        </div>
 
         {/* Sidebar Footer: Creator & Portfolio */}
         <div style={styles.sidebarFooter}>
@@ -668,6 +857,12 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
           <ChatMode
             isMobile={isMobile}
             onOpenSidebar={() => setIsSidebarOpen(true)}
+            activeSessionId={activeSessionId}
+            onSessionChange={(id) => {
+              setActiveSessionId(id)
+              localStorage.setItem(STORAGE_KEY, id)
+            }}
+            onCreateNewSession={handleStartNewChat}
           />
         </div>
 
@@ -1002,11 +1197,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer'
   },
   navMenu: {
-    padding: '16px 14px',
+    padding: '16px 14px 8px 14px',
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    flex: 1
+    flexShrink: 0
   },
   navItem: {
     display: 'flex',
@@ -1047,6 +1242,100 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '11px',
     color: '#64748b'
   },
+
+  // RIWAYAT CHAT SIDEBAR STYLES
+  historySection: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    minHeight: 0,
+    padding: '8px 14px',
+    borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+  },
+  historyHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '4px 2px 8px 2px'
+  },
+  historyTitle: {
+    fontSize: '11px',
+    fontWeight: 700,
+    letterSpacing: '0.6px',
+    color: '#64748b',
+    textTransform: 'uppercase'
+  },
+  newChatMiniBtn: {
+    backgroundColor: 'rgba(37, 99, 235, 0.18)',
+    border: '1px solid rgba(59, 130, 246, 0.35)',
+    color: '#60a5fa',
+    borderRadius: '6px',
+    padding: '2px 8px',
+    fontSize: '11px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  historyList: {
+    flex: 1,
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    paddingRight: '2px'
+  },
+  historyItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 10px',
+    borderRadius: '8px',
+    backgroundColor: 'transparent',
+    border: '1px solid transparent',
+    color: '#94a3b8',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    userSelect: 'none'
+  },
+  historyItemActive: {
+    backgroundColor: 'rgba(37, 99, 235, 0.18)',
+    borderColor: 'rgba(59, 130, 246, 0.35)',
+    color: '#ffffff'
+  },
+  historyItemIcon: {
+    fontSize: '13px',
+    flexShrink: 0
+  },
+  historyItemText: {
+    flex: 1,
+    fontSize: '12.5px',
+    fontWeight: 500,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  historyDeleteBtn: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '#64748b',
+    fontSize: '11px',
+    cursor: 'pointer',
+    padding: '2px 4px',
+    borderRadius: '4px',
+    opacity: 0.6,
+    transition: 'opacity 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  historyEmpty: {
+    fontSize: '11.5px',
+    color: '#475569',
+    textAlign: 'center',
+    padding: '16px 0',
+    fontStyle: 'italic'
+  },
+
   sidebarFooter: {
     padding: '16px 14px',
     borderTop: '1px solid rgba(255, 255, 255, 0.06)'
