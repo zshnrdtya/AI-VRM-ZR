@@ -2,12 +2,13 @@ import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { Emotion, AppStatus } from '../../shared/types'
 import { AvatarCanvas } from './components/AvatarCanvas'
+import { ChatMode } from './components/ChatMode'
 import { LipSyncController } from './avatar/LipSyncController'
 import { AudioPlayer } from './voice/AudioPlayer'
 import MODEL_URL from './assets/model.vrm?url'
 import LOGO_URL from './assets/logo-zz.png'
 
-type NavTab = 'assistant' | 'about'
+type NavTab = 'assistant' | 'chat' | 'about'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('assistant')
@@ -57,6 +58,15 @@ export default function App() {
     if (isMobile) {
       setIsSidebarOpen(false)
     }
+
+    // Hentikan suara/TTS jika keluar dari tab avatar 3D
+    if (tab !== 'assistant') {
+      window.speechSynthesis?.cancel()
+      audioPlayerRef.current?.stop()
+      if (lipSync) lipSync.setSpeaking(false)
+      setAnimationState('idle')
+    }
+
     if (tab === 'assistant') {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'))
@@ -198,11 +208,10 @@ export default function App() {
     }
   }, [lipSync])
 
-  // Model respon kilat (1-2 detik) tanpa overhead deep-thinking
+  // Model respon kilat & stabil yang terbukti aktif
   const FAST_MODELS = [
     'gemini-3.1-flash-lite',
-    'gemini-3.5-flash-lite',
-    'gemini-flash-lite-latest'
+    'gemini-3.6-flash'
   ]
 
   // Kirim Pesan ke Gemini LLM dengan respon cepat & automatic fallback
@@ -228,7 +237,7 @@ export default function App() {
       let rawText = ''
       let lastError: any = null
 
-      // Loop coba model yang paling cepat
+      // Loop coba model yang paling cepat dan stabil
       for (const modelName of FAST_MODELS) {
         try {
           const model = genAI.getGenerativeModel({
@@ -250,17 +259,17 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
             history: conversationHistoryRef.current
           })
 
-          // Batasi waktu tunggu per-model maks 6 detik agar tidak macet lama
+          // Beri waktu tunggu wajar hingga 12 detik agar tidak putus prematur
           const sendPromise = chatSession.sendMessage(message)
           const timeoutPromise = new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error(`Timeout pada model ${modelName}`)), 6000)
+            setTimeout(() => reject(new Error(`Timeout pada model ${modelName}`)), 12000)
           )
 
           const result = await Promise.race([sendPromise, timeoutPromise])
           rawText = result.response.text().trim()
           if (rawText) break // Berhasil mendapatkan respon kilat!
         } catch (err: any) {
-          console.warn(`[Zeera] Model ${modelName} lambat/gagal, mencoba fallback...`, err.message || err)
+          console.warn(`[Zeera Avatar] Model ${modelName} kendala, mencoba fallback...`, err.message || err)
           lastError = err
         }
       }
@@ -376,7 +385,22 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
 
         {/* Navigation Menu */}
         <nav style={styles.navMenu}>
-          {/* Menu 1: AI Asisten Virtual */}
+          {/* Menu 1: AI Text Chat */}
+          <button
+            onClick={() => handleTabChange('chat')}
+            style={{
+              ...styles.navItem,
+              ...(activeTab === 'chat' ? styles.navItemActive : {})
+            }}
+          >
+            <span style={styles.navIcon}>💬</span>
+            <div style={styles.navTextWrapper}>
+              <span style={styles.navTitle}>AI Text Chat</span>
+              <span style={styles.navDesc}>Mode Teks Tanpa Suara</span>
+            </div>
+          </button>
+
+          {/* Menu 2: AI Asisten Virtual */}
           <button
             onClick={() => handleTabChange('assistant')}
             style={{
@@ -391,7 +415,7 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
             </div>
           </button>
 
-          {/* Menu 2: Tentang & Panduan */}
+          {/* Menu 3: Tentang & Panduan */}
           <button
             onClick={() => handleTabChange('about')}
             style={{
@@ -636,7 +660,18 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
           </footer>
         </div>
 
-        {/* TAB 2: TENTANG & PANDUAN PROYEK */}
+        {/* TAB 2: AI TEXT CHAT (BARU) */}
+        <div style={{
+          ...styles.tabView,
+          display: activeTab === 'chat' ? 'flex' : 'none'
+        }}>
+          <ChatMode
+            isMobile={isMobile}
+            onOpenSidebar={() => setIsSidebarOpen(true)}
+          />
+        </div>
+
+        {/* TAB 3: TENTANG & PANDUAN PROYEK */}
         <div style={{
           ...styles.tabView,
           display: activeTab === 'about' ? 'flex' : 'none'
@@ -749,27 +784,44 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>🎙️</div>
+                    <div style={styles.guideIcon}>🤖</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>1. Percakapan Suara (Voice Chat)</h4>
+                      <h4 style={styles.guideHeading}>1. Mode AI Asisten Virtual (Avatar 3D & Suara)</h4>
                       <p style={styles.guideText}>
-                        Klik tombol <strong>Mikrofon (🎙️)</strong> di bar bawah. Izinkan akses mic di browser, lalu bicaralah dalam bahasa Indonesia. Zeera akan mendengarkan dan otomatis menjawab dengan suara imut serta gerakan bibir (*lip-sync*) yang sinkron.
+                        Nikmati interaksi visual bersama avatar 3D anime interaktif lengkap dengan ekspresi wajah, gestur dinamis, dan gerakan bibir (<em>lip-sync</em>) yang sinkron. Anda dapat berbicara langsung menggunakan tombol <strong>Mikrofon (🎙️)</strong> atau mengetik pesan di bar bagian bawah.
                       </p>
                     </div>
                   </div>
 
-                  {/* Step 2 */}
+                  {/* Step 2 (FITUR TERBARU) */}
                   <div style={{
                     ...styles.guideItem,
                     flexDirection: isMobile ? 'column' : 'row',
-                    gap: isMobile ? '10px' : '16px'
+                    gap: isMobile ? '10px' : '16px',
+                    borderColor: 'rgba(59, 130, 246, 0.3)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.75)'
                   }}>
-                    <div style={styles.guideIcon}>⌨️</div>
+                    <div style={{ ...styles.guideIcon, backgroundColor: 'rgba(37, 99, 235, 0.25)' }}>💬</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>2. Percakapan Teks (Text Chat)</h4>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <h4 style={{ ...styles.guideHeading, margin: 0 }}>2. Mode AI Text Chat</h4>
+                        <span style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          color: '#38bdf8',
+                          backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                          padding: '2px 6px',
+                          borderRadius: '4px'
+                        }}>FITUR TERBARU</span>
+                      </div>
                       <p style={styles.guideText}>
-                        Anda juga dapat mengetik pertanyaan atau sapaan langsung ke dalam kotak teks di bar bawah, kemudian tekan <strong>Enter</strong> atau klik <strong>Kirim</strong>.
+                        Ruang obrolan teks berdesain <em>dark mode</em> modern ala ChatGPT. Mode ini beroperasi secara hening (<strong>tanpa suara TTS</strong>), sangat ideal ketika Anda berada di ruang publik atau menginginkan jawaban teks yang panjang, terstruktur, dan mendalam.
                       </p>
+                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.6' }}>
+                        <li><strong>Riwayat Percakapan (Session History):</strong> Zeera mengingat konteks obrolan Anda sebelumnya dalam satu sesi.</li>
+                        <li><strong>Pintasan Keyboard:</strong> Tekan <strong>Enter</strong> untuk mengirim pesan, atau <strong>Shift + Enter</strong> untuk membuat baris baru.</li>
+                        <li><strong>Tombol Bersihkan (🗑️):</strong> Reset riwayat percakapan kapan saja untuk memulai topik pembicaraan baru.</li>
+                      </ul>
                     </div>
                   </div>
 
@@ -779,11 +831,11 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>📱</div>
+                    <div style={styles.guideIcon}>⚡</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>3. Tampilan Responsif Mobile</h4>
+                      <h4 style={styles.guideHeading}>3. Perpindahan Tab Mulus & Efisien</h4>
                       <p style={styles.guideText}>
-                        Pada layar ponsel, avatar otomatis menyesuaikan rasio vertikal dan menu navigasi dapat dibuka melalui tombol <strong>☰</strong> di kiri atas.
+                        Sistem navigasi dirancang dengan arsitektur memori cerdas. Berpindah antara menu <strong>AI Asisten Virtual</strong> dan <strong>AI Text Chat</strong> berlangsung instan tanpa me-reload model karakter 3D atau merusak WebGL Canvas. Suara avatar juga otomatis dihentikan saat Anda berpindah tab agar tidak mengganggu.
                       </p>
                     </div>
                   </div>
@@ -794,11 +846,26 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
+                    <div style={styles.guideIcon}>📱</div>
+                    <div style={styles.guideContent}>
+                      <h4 style={styles.guideHeading}>4. Tampilan Responsif Smartphone</h4>
+                      <p style={styles.guideText}>
+                        Zeera AI dapat digunakan secara optimal di perangkat mobile. Menu sidebar dapat dibuka melalui tombol hamburger (<strong>☰</strong>) di kiri atas, dan tampilan antarmuka secara otomatis menyesuaikan orientasi layar Anda.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 5 */}
+                  <div style={{
+                    ...styles.guideItem,
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: isMobile ? '10px' : '16px'
+                  }}>
                     <div style={styles.guideIcon}>💡</div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>4. Tips Berbicara dengan Zeera</h4>
+                      <h4 style={styles.guideHeading}>5. Tips Berinteraksi</h4>
                       <p style={styles.guideText}>
-                        Zeera diprogram dengan kepribadian yang ceria, ramah, dan bersahabat seperti teman akrab. Cobalah menyapa <em>&ldquo;Halo Zeera!&rdquo;</em> atau <em>&ldquo;Ceritakan lelucon lucu!&rdquo;</em>.
+                        Zeera diprogram dengan kepribadian yang ceria, ramah, dan solutif layaknya teman akrab. Cobalah menyapa <em>&ldquo;Halo Zeera!&rdquo;</em>, meminta saran kreatif, membahas teknologi, atau sekadar berbagi cerita santai.
                       </p>
                     </div>
                   </div>
@@ -822,6 +889,8 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   <span style={styles.techBadge}>Three.js</span>
                   <span style={styles.techBadge}>Pixiv Three-VRM</span>
                   <span style={styles.techBadge}>Google Gemini AI</span>
+                  <span style={styles.techBadge}>ChatGPT-Style Chat UI</span>
+                  <span style={styles.techBadge}>Multi-Turn Memory</span>
                   <span style={styles.techBadge}>Microsoft Edge Neural TTS</span>
                   <span style={styles.techBadge}>Web Audio API & STT</span>
                 </div>
