@@ -1425,7 +1425,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   headerLeft: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px'
+    gap: '10px',
+    minWidth: 0
   },
   hamburgerBtn: {
     backgroundColor: 'rgba(30, 41, 59, 0.6)',
@@ -1438,7 +1439,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    flexShrink: 0
   },
   brandTitle: {
     margin: 0,

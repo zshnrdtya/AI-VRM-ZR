@@ -170,12 +170,21 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
       await db.sessions.update(activeSessionId, { updatedAt: aiNow })
     } catch (err: any) {
       console.error('[Zeera Text Chat] Error detail:', err)
-      const errorDetail = err?.message || 'Koneksi ke server AI terganggu.'
+
+      const rawErrMsg = (err?.message || String(err || '')).toLowerCase()
+      let errorDetail = 'Waduh, sepertinya sedang ada kendala jaringan atau sistem. Coba kirim ulang pesanmu ya!'
+
+      if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand')) {
+        errorDetail = 'Maaf ya, server Zeera saat ini sedang sangat penuh atau sedang dalam perbaikan. Coba sapa aku lagi beberapa menit ke depan ya! 🙏'
+      } else if (rawErrMsg.includes('api_key_invalid') || rawErrMsg.includes('403')) {
+        errorDetail = 'Sepertinya ada kendala pada kunci akses API (API Key). Mohon periksa kembali pengaturannya.'
+      }
+
       await db.messages.add({
         id: 'err_' + Date.now(),
         sessionId: activeSessionId,
         role: 'assistant',
-        text: `Maaf, sepertinya sedang ada kendala: ${errorDetail}`,
+        text: errorDetail,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         createdAt: Date.now()
       })
@@ -213,39 +222,159 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
         style={{
           ...chatStyles.header,
           paddingTop: isMobile ? 'max(6px, env(safe-area-inset-top, 0px))' : '0',
-          paddingLeft: isMobile ? '14px' : '28px',
-          paddingRight: isMobile ? '14px' : '28px',
+          paddingLeft: isMobile ? '12px' : '28px',
+          paddingRight: isMobile ? '12px' : '28px',
           height: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px',
-          minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
+          minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px',
+          boxSizing: 'border-box'
         }}
       >
-        <div style={chatStyles.headerLeft}>
+        <div
+          style={{
+            ...chatStyles.headerLeft,
+            gap: isMobile ? '10px' : '12px',
+            minWidth: 0,
+            flex: 1
+          }}
+        >
           {isMobile && (
-            <button onClick={onOpenSidebar} style={chatStyles.hamburgerBtn} title="Buka Menu">
+            <button
+              onClick={onOpenSidebar}
+              style={{ ...chatStyles.hamburgerBtn, flexShrink: 0 }}
+              title="Buka Menu"
+              aria-label="Buka Menu"
+            >
               ☰
             </button>
           )}
-          <div>
-            <h1 style={{ ...chatStyles.title, fontSize: isMobile ? '15px' : '17px' }}>
+          <div style={{ minWidth: 0, overflow: 'hidden' }}>
+            <h1
+              style={{
+                ...chatStyles.title,
+                fontSize: isMobile ? '15px' : '17px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                lineHeight: 1.2
+              }}
+            >
               Zeera Text Chat
             </h1>
-            <span style={chatStyles.subtitle}>Local-First Persistent Chat (No TTS)</span>
+            <span
+              style={{
+                ...chatStyles.subtitle,
+                fontSize: isMobile ? '10.5px' : '11px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: 'block'
+              }}
+            >
+              {isMobile ? 'Tersimpan Lokal' : 'Local-First Persistent Chat (No TTS)'}
+            </span>
           </div>
         </div>
 
-        <div style={chatStyles.headerRight}>
-          <button onClick={onCreateNewSession} style={chatStyles.newChatBtn} title="Mulai Percakapan Baru">
-            ➕ Chat Baru
+        <div
+          style={{
+            ...chatStyles.headerRight,
+            gap: isMobile ? '6px' : '8px',
+            flexShrink: 0
+          }}
+        >
+          <button
+            onClick={onCreateNewSession}
+            style={{
+              ...chatStyles.newChatBtn,
+              ...(isMobile
+                ? {
+                    width: '36px',
+                    height: '36px',
+                    padding: 0,
+                    borderRadius: '10px',
+                    justifyContent: 'center',
+                    fontSize: '15px'
+                  }
+                : {})
+            }}
+            title="Mulai Percakapan Baru"
+            aria-label="Mulai Percakapan Baru"
+          >
+            <span>➕</span>
+            {!isMobile && <span>Chat Baru</span>}
           </button>
-          <button onClick={handleDeleteCurrentChat} style={chatStyles.clearBtn} title="Hapus Percakapan Ini">
-            🗑️ Hapus Chat
+          <button
+            onClick={handleDeleteCurrentChat}
+            style={{
+              ...chatStyles.clearBtn,
+              ...(isMobile
+                ? {
+                    width: '36px',
+                    height: '36px',
+                    padding: 0,
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '15px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                    borderColor: 'rgba(239, 68, 68, 0.25)',
+                    color: '#fca5a5'
+                  }
+                : {})
+            }}
+            title="Hapus Percakapan Ini"
+            aria-label="Hapus Percakapan Ini"
+          >
+            <span>🗑️</span>
+            {!isMobile && <span>Hapus Chat</span>}
           </button>
         </div>
       </header>
 
       {/* Message History Area */}
-      <div style={chatStyles.chatArea}>
-        <div style={chatStyles.messagesList}>
+      <div
+        style={{
+          ...chatStyles.chatArea,
+          padding: isMobile ? '16px 12px' : '24px 16px'
+        }}
+      >
+        <div
+          style={{
+            ...chatStyles.messagesList,
+            gap: isMobile ? '12px' : '18px'
+          }}
+        >
+          {/* Empty state bila percakapan belum ada pesan */}
+          {messages.length === 0 && (
+            <div style={chatStyles.emptyContainer}>
+              <div style={chatStyles.emptyIconWrapper}>
+                <img src={LOGO_URL} alt="Zeera" style={chatStyles.emptyLogo} />
+              </div>
+              <h3 style={chatStyles.emptyTitle}>Mulai Mengobrol dengan Zeera</h3>
+              <p style={chatStyles.emptyDesc}>
+                {isMobile
+                  ? 'Ketik pesan atau pilih salah satu topik di bawah untuk memulai percakapan.'
+                  : 'Mode chat teks ini bekerja secara offline-first dengan database lokal. Ajukan pertanyaan, minta ringkasan, atau diskusikan ide.'}
+              </p>
+              <div style={chatStyles.suggestionsWrapper}>
+                {[
+                  '👋 Halo Zeera, ceritakan tentang dirimu!',
+                  '💡 Berikan ide topik menarik hari ini',
+                  '💻 Bantu buatkan rencana kegiatan mingguan'
+                ].map((prompt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setInputMessage(prompt.replace(/^[^\s]+\s/, ''))}
+                    style={chatStyles.suggestionChip}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {messages.map((msg) => {
             const isUser = msg.role === 'user'
             return (
@@ -253,20 +382,39 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
                 key={msg.id}
                 style={{
                   ...chatStyles.messageRow,
-                  justifyContent: isUser ? 'flex-end' : 'flex-start'
+                  justifyContent: isUser ? 'flex-end' : 'flex-start',
+                  gap: isMobile ? '8px' : '12px'
                 }}
               >
                 {!isUser && (
-                  <img src={LOGO_URL} alt="Zeera" style={chatStyles.avatarIcon} />
+                  <img
+                    src={LOGO_URL}
+                    alt="Zeera"
+                    style={{
+                      ...chatStyles.avatarIcon,
+                      width: isMobile ? '30px' : '34px',
+                      height: isMobile ? '30px' : '34px'
+                    }}
+                  />
                 )}
                 <div
                   style={{
                     ...chatStyles.bubble,
                     ...(isUser ? chatStyles.userBubble : chatStyles.assistantBubble),
-                    maxWidth: isMobile ? '88%' : '72%'
+                    maxWidth: isMobile ? '86%' : '72%',
+                    padding: isMobile ? '10px 14px' : '12px 18px',
+                    borderRadius: isMobile ? '14px' : '16px'
                   }}
                 >
-                  <p style={chatStyles.messageText}>{msg.text}</p>
+                  <p
+                    style={{
+                      ...chatStyles.messageText,
+                      fontSize: isMobile ? '14px' : '14.5px',
+                      lineHeight: isMobile ? '1.5' : '1.6'
+                    }}
+                  >
+                    {msg.text}
+                  </p>
                   <span style={chatStyles.timestamp}>{msg.timestamp}</span>
                 </div>
               </div>
@@ -275,10 +423,38 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
 
           {/* Typing Indicator */}
           {isLoading && (
-            <div style={{ ...chatStyles.messageRow, justifyContent: 'flex-start' }}>
-              <img src={LOGO_URL} alt="Zeera" style={chatStyles.avatarIcon} />
-              <div style={{ ...chatStyles.bubble, ...chatStyles.assistantBubble }}>
-                <span style={chatStyles.typingText}>✨ Zeera sedang mengetik...</span>
+            <div
+              style={{
+                ...chatStyles.messageRow,
+                justifyContent: 'flex-start',
+                gap: isMobile ? '8px' : '12px'
+              }}
+            >
+              <img
+                src={LOGO_URL}
+                alt="Zeera"
+                style={{
+                  ...chatStyles.avatarIcon,
+                  width: isMobile ? '30px' : '34px',
+                  height: isMobile ? '30px' : '34px'
+                }}
+              />
+              <div
+                style={{
+                  ...chatStyles.bubble,
+                  ...chatStyles.assistantBubble,
+                  padding: isMobile ? '8px 14px' : '12px 18px',
+                  borderRadius: isMobile ? '14px' : '16px'
+                }}
+              >
+                <span
+                  style={{
+                    ...chatStyles.typingText,
+                    fontSize: isMobile ? '12px' : '13px'
+                  }}
+                >
+                  ✨ Zeera sedang mengetik...
+                </span>
               </div>
             </div>
           )}
@@ -290,14 +466,20 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
       <footer
         style={{
           ...chatStyles.footer,
-          paddingLeft: isMobile ? '14px' : '24px',
-          paddingRight: isMobile ? '14px' : '24px',
+          paddingTop: isMobile ? '8px' : '12px',
+          paddingLeft: isMobile ? '12px' : '24px',
+          paddingRight: isMobile ? '12px' : '24px',
           paddingBottom: isMobile
-            ? 'max(20px, calc(14px + env(safe-area-inset-bottom, 0px)))'
+            ? 'max(14px, calc(10px + env(safe-area-inset-bottom, 0px)))'
             : 'calc(18px + env(safe-area-inset-bottom, 0px))'
         }}
       >
-        <div style={chatStyles.inputCard}>
+        <div
+          style={{
+            ...chatStyles.inputCard,
+            padding: isMobile ? '6px 8px 6px 12px' : '8px 12px'
+          }}
+        >
           <textarea
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
@@ -307,8 +489,15 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
                 handleSendMessage()
               }
             }}
-            placeholder={isMobile ? 'Ketik pesan...' : 'Ketik pertanyaan untuk Zeera... (Tekan Enter untuk kirim, Shift+Enter untuk baris baru)'}
-            style={chatStyles.textarea}
+            placeholder={
+              isMobile
+                ? 'Ketik pesan...'
+                : 'Ketik pertanyaan untuk Zeera... (Tekan Enter untuk kirim, Shift+Enter untuk baris baru)'
+            }
+            style={{
+              ...chatStyles.textarea,
+              fontSize: isMobile ? '15px' : '14px'
+            }}
             rows={1}
             disabled={isLoading}
           />
@@ -317,11 +506,12 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
             disabled={!inputMessage.trim() || isLoading}
             style={{
               ...chatStyles.sendBtn,
+              padding: isMobile ? '8px 14px' : '9px 18px',
               opacity: inputMessage.trim() && !isLoading ? 1 : 0.45,
               cursor: inputMessage.trim() && !isLoading ? 'pointer' : 'not-allowed'
             }}
           >
-            Kirim ➔
+            {isMobile ? 'Kirim' : 'Kirim ➔'}
           </button>
         </div>
       </footer>
@@ -515,5 +705,61 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     fontWeight: 600,
     transition: 'all 0.2s ease',
     flexShrink: 0
+  },
+  emptyContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    margin: 'auto',
+    padding: '24px 16px',
+    maxWidth: '460px'
+  },
+  emptyIconWrapper: {
+    width: '64px',
+    height: '64px',
+    borderRadius: '18px',
+    backgroundColor: 'rgba(37, 99, 235, 0.14)',
+    border: '1px solid rgba(59, 130, 246, 0.3)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '14px',
+    boxShadow: '0 4px 20px rgba(37, 99, 235, 0.2)'
+  },
+  emptyLogo: {
+    width: '42px',
+    height: '42px',
+    objectFit: 'contain'
+  },
+  emptyTitle: {
+    margin: '0 0 8px 0',
+    fontSize: '17px',
+    fontWeight: 700,
+    color: '#ffffff'
+  },
+  emptyDesc: {
+    margin: '0 0 18px 0',
+    fontSize: '13px',
+    color: '#94a3b8',
+    lineHeight: '1.5'
+  },
+  suggestionsWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    width: '100%'
+  },
+  suggestionChip: {
+    backgroundColor: 'rgba(30, 41, 59, 0.55)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    color: '#cbd5e1',
+    padding: '10px 14px',
+    borderRadius: '10px',
+    fontSize: '13px',
+    textAlign: 'left',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
   }
 }
