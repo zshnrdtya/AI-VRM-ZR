@@ -4,6 +4,16 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import ReactMarkdown from 'react-markdown'
 import { db, MessageItem } from '../lib/db'
 import LOGO_URL from '../assets/logo-zz.png'
+import {
+  Menu,
+  Plus,
+  Trash2,
+  SendHorizontal,
+  Sparkles,
+  Lightbulb,
+  MessageSquare,
+  Compass
+} from 'lucide-react'
 
 interface ChatModeProps {
   isMobile: boolean
@@ -245,7 +255,7 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
               title="Buka Menu"
               aria-label="Buka Menu"
             >
-              ☰
+              <Menu size={18} />
             </button>
           )}
           <div style={{ minWidth: 0, overflow: 'hidden' }}>
@@ -301,7 +311,7 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
             title="Mulai Percakapan Baru"
             aria-label="Mulai Percakapan Baru"
           >
-            <span>➕</span>
+            <Plus size={isMobile ? 18 : 13} />
             {!isMobile && <span>Chat Baru</span>}
           </button>
           <button
@@ -327,7 +337,7 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
             title="Hapus Percakapan Ini"
             aria-label="Hapus Percakapan Ini"
           >
-            <span>🗑️</span>
+            <Trash2 size={isMobile ? 18 : 13} />
             {!isMobile && <span>Hapus Chat</span>}
           </button>
         </div>
@@ -360,18 +370,27 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
               </p>
               <div style={chatStyles.suggestionsWrapper}>
                 {[
-                  '👋 Halo Zeera, ceritakan tentang dirimu!',
-                  '💡 Berikan ide topik menarik hari ini',
-                  '💻 Bantu buatkan rencana kegiatan mingguan'
-                ].map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setInputMessage(prompt.replace(/^[^\s]+\s/, ''))}
-                    style={chatStyles.suggestionChip}
-                  >
-                    {prompt}
-                  </button>
-                ))}
+                  { text: 'Halo Zeera, ceritakan tentang dirimu!', icon: MessageSquare },
+                  { text: 'Berikan ide topik menarik hari ini', icon: Lightbulb },
+                  { text: 'Bantu buatkan rencana kegiatan mingguan', icon: Compass }
+                ].map((item, idx) => {
+                  const IconComp = item.icon
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setInputMessage(item.text)}
+                      style={{
+                        ...chatStyles.suggestionChip,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <IconComp size={14} color="#60a5fa" />
+                      <span>{item.text}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -607,16 +626,20 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
                   ...chatStyles.bubble,
                   ...chatStyles.assistantBubble,
                   padding: isMobile ? '8px 14px' : '12px 18px',
-                  borderRadius: isMobile ? '14px' : '16px'
+                  borderRadius: isMobile ? '14px' : '16px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
                 }}
               >
+                <Sparkles size={13} color="#60a5fa" />
                 <span
                   style={{
                     ...chatStyles.typingText,
                     fontSize: isMobile ? '12px' : '13px'
                   }}
                 >
-                  ✨ Zeera sedang mengetik...
+                  Zeera sedang mengetik...
                 </span>
               </div>
             </div>
@@ -671,10 +694,14 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
               ...chatStyles.sendBtn,
               padding: isMobile ? '8px 14px' : '9px 18px',
               opacity: inputMessage.trim() && !isLoading ? 1 : 0.45,
-              cursor: inputMessage.trim() && !isLoading ? 'pointer' : 'not-allowed'
+              cursor: inputMessage.trim() && !isLoading ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}
           >
-            {isMobile ? 'Kirim' : 'Kirim ➔'}
+            <span>Kirim</span>
+            <SendHorizontal size={14} />
           </button>
         </div>
       </footer>

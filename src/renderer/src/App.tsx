@@ -9,6 +9,28 @@ import { LipSyncController } from './avatar/LipSyncController'
 import { AudioPlayer } from './voice/AudioPlayer'
 import MODEL_URL from './assets/model.vrm?url'
 import LOGO_URL from './assets/logo-zz.png'
+import {
+  MessageSquare,
+  Bot,
+  BookOpen,
+  Plus,
+  Trash2,
+  Menu,
+  X,
+  ExternalLink,
+  Globe,
+  Mic,
+  Square,
+  Sparkles,
+  Volume2,
+  AlertTriangle,
+  Heart,
+  Zap,
+  Smartphone,
+  Lightbulb,
+  Rocket,
+  Send
+} from 'lucide-react'
 
 type NavTab = 'assistant' | 'chat' | 'about'
 const STORAGE_KEY = 'zeera_active_session_id'
@@ -521,7 +543,7 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
               style={styles.sidebarCloseBtn}
               title="Tutup Menu"
             >
-              ✕
+              <X size={18} />
             </button>
           )}
         </div>
@@ -536,7 +558,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
               ...(activeTab === 'chat' ? styles.navItemActive : {})
             }}
           >
-            <span style={styles.navIcon}>💬</span>
+            <span style={{ ...styles.navIcon, color: activeTab === 'chat' ? '#60a5fa' : '#94a3b8' }}>
+              <MessageSquare size={19} />
+            </span>
             <div style={styles.navTextWrapper}>
               <span style={styles.navTitle}>AI Text Chat</span>
               <span style={styles.navDesc}>Mode Teks Tanpa Suara</span>
@@ -551,7 +575,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
               ...(activeTab === 'assistant' ? styles.navItemActive : {})
             }}
           >
-            <span style={styles.navIcon}>🤖</span>
+            <span style={{ ...styles.navIcon, color: activeTab === 'assistant' ? '#60a5fa' : '#94a3b8' }}>
+              <Bot size={19} />
+            </span>
             <div style={styles.navTextWrapper}>
               <span style={styles.navTitle}>AI Asisten Virtual</span>
               <span style={styles.navDesc}>Avatar 3D & Percakapan</span>
@@ -566,7 +592,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
               ...(activeTab === 'about' ? styles.navItemActive : {})
             }}
           >
-            <span style={styles.navIcon}>📖</span>
+            <span style={{ ...styles.navIcon, color: activeTab === 'about' ? '#60a5fa' : '#94a3b8' }}>
+              <BookOpen size={19} />
+            </span>
             <div style={styles.navTextWrapper}>
               <span style={styles.navTitle}>Tentang & Panduan</span>
               <span style={styles.navDesc}>Info Pembuat & Tata Cara</span>
@@ -580,10 +608,16 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
             <span style={styles.historyTitle}>Riwayat Chat</span>
             <button
               onClick={handleStartNewChat}
-              style={styles.newChatMiniBtn}
+              style={{
+                ...styles.newChatMiniBtn,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
               title="Buat Sesi Chat Baru"
             >
-              + Baru
+              <Plus size={11} />
+              <span>Baru</span>
             </button>
           </div>
           <div style={styles.historyList}>
@@ -604,14 +638,16 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                       }}
                       title={sess.title}
                     >
-                      <span style={styles.historyItemIcon}>💭</span>
+                      <span style={{ ...styles.historyItemIcon, color: isActive ? '#60a5fa' : '#64748b', display: 'flex' }}>
+                        <MessageSquare size={13} />
+                      </span>
                       <span style={styles.historyItemText}>{sess.title}</span>
                       <button
                         onClick={(e) => handleDeleteSession(e, sess.id)}
                         style={styles.historyDeleteBtn}
                         title="Hapus percakapan ini"
                       >
-                        ✕
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   )
@@ -634,8 +670,10 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
               rel="noreferrer"
               style={styles.portfolioButton}
             >
-              <span>🌐 radityarz.my.id</span>
-              <span style={{ fontSize: '12px' }}>↗</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Globe size={13} /> radityarz.my.id
+              </span>
+              <ExternalLink size={12} />
             </a>
           </div>
         </div>
@@ -666,7 +704,7 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   style={styles.hamburgerBtn}
                   title="Buka Menu"
                 >
-                  ☰
+                  <Menu size={20} />
                 </button>
               )}
               <h1 style={{
@@ -743,8 +781,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
 
             {/* Error Notification */}
             {errorMessage && (
-              <div style={styles.errorBanner}>
-                ⚠️ {errorMessage}
+              <div style={{ ...styles.errorBanner, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertTriangle size={15} color="#fca5a5" />
+                <span>{errorMessage}</span>
               </div>
             )}
 
@@ -774,13 +813,39 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
             <div style={{
               ...styles.statusHint,
               fontSize: isMobile ? '11px' : '12px',
-              marginBottom: isMobile ? '6px' : '8px'
+              marginBottom: isMobile ? '6px' : '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px'
             }}>
-              {status === 'listening' && '🎙️ Mendengarkan... (Bicara sekarang)'}
-              {status === 'processing' && '✨ Zeera sedang memproses...'}
-              {status === 'speaking' && '🔊 Zeera sedang berbicara...'}
-              {status === 'error' && '⚠️ Terjadi kendala, coba lagi'}
-              {status === 'idle' && (isMobile ? 'Ketik atau klik mic untuk bicara' : 'Ketik pesan atau klik ikon mikrofon untuk berbicara')}
+              {status === 'listening' && (
+                <>
+                  <Mic size={14} color="#ef4444" />
+                  <span>Mendengarkan... (Bicara sekarang)</span>
+                </>
+              )}
+              {status === 'processing' && (
+                <>
+                  <Sparkles size={14} color="#f59e0b" />
+                  <span>Zeera sedang memproses...</span>
+                </>
+              )}
+              {status === 'speaking' && (
+                <>
+                  <Volume2 size={14} color="#10b981" />
+                  <span>Zeera sedang berbicara...</span>
+                </>
+              )}
+              {status === 'error' && (
+                <>
+                  <AlertTriangle size={14} color="#ef4444" />
+                  <span>Terjadi kendala, coba lagi</span>
+                </>
+              )}
+              {status === 'idle' && (
+                <span>{isMobile ? 'Ketik atau klik mic untuk bicara' : 'Ketik pesan atau klik ikon mikrofon untuk berbicara'}</span>
+              )}
             </div>
 
             {/* Input Bar */}
@@ -800,7 +865,7 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 }}
                 title={isListening ? 'Hentikan rekaman suara' : 'Mulai bicara dengan suara'}
               >
-                {isListening ? '⏹️' : '🎙️'}
+                {isListening ? <Square size={16} fill="white" /> : <Mic size={18} color="#94a3b8" />}
               </button>
 
               <input
@@ -822,13 +887,17 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 disabled={!inputText.trim() || status === 'processing'}
                 style={{
                   ...styles.sendButton,
-                  padding: isMobile ? '8px 14px' : '8px 20px',
+                  padding: isMobile ? '8px 14px' : '8px 18px',
                   fontSize: isMobile ? '13px' : '14px',
                   opacity: inputText.trim() && status !== 'processing' ? 1 : 0.45,
-                  cursor: inputText.trim() && status !== 'processing' ? 'pointer' : 'not-allowed'
+                  cursor: inputText.trim() && status !== 'processing' ? 'pointer' : 'not-allowed',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
                 }}
               >
-                Kirim
+                <span>Kirim</span>
+                <Send size={13} />
               </button>
             </div>
 
@@ -840,10 +909,16 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 rel="noreferrer"
                 style={{
                   ...styles.watermarkLink,
-                  fontSize: isMobile ? '10px' : '11.5px'
+                  fontSize: isMobile ? '10px' : '11.5px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px'
                 }}
               >
-                Developed with 💙 by <span style={{ color: 'rgba(147, 197, 253, 0.9)', fontWeight: 600 }}>Raditya Rai Zeeshan</span>
+                <span>Developed with</span>
+                <Heart size={12} color="#3b82f6" fill="#3b82f6" />
+                <span>by</span>
+                <span style={{ color: 'rgba(147, 197, 253, 0.9)', fontWeight: 600 }}>Raditya Rai Zeeshan</span>
               </a>
             </div>
           </footer>
@@ -887,7 +962,7 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   style={styles.hamburgerBtn}
                   title="Buka Menu"
                 >
-                  ☰
+                  <Menu size={20} />
                 </button>
               )}
               <h1 style={{
@@ -905,10 +980,14 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 style={{
                   ...styles.headerPortoBtn,
                   fontSize: isMobile ? '12px' : '13px',
-                  padding: isMobile ? '5px 10px' : '6px 14px'
+                  padding: isMobile ? '5px 10px' : '6px 14px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px'
                 }}
               >
-                {isMobile ? 'Porto ↗' : 'radityarz.my.id ↗'}
+                <span>{isMobile ? 'Porto' : 'radityarz.my.id'}</span>
+                <ExternalLink size={12} />
               </a>
             </div>
           </header>
@@ -953,10 +1032,15 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                       fontSize: isMobile ? '13px' : '14px',
                       padding: isMobile ? '9px 14px' : '10px 18px',
                       width: isMobile ? '100%' : 'auto',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px'
                     }}
                   >
-                    <span>🚀 radityarz.my.id</span>
+                    <Rocket size={16} />
+                    <span>radityarz.my.id</span>
+                    <ExternalLink size={13} />
                   </a>
                 </div>
               </div>
@@ -979,14 +1063,16 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>🤖</div>
+                    <div style={styles.guideIcon}>
+                      <Bot size={22} color="#60a5fa" />
+                    </div>
                     <div style={styles.guideContent}>
                       <h4 style={styles.guideHeading}>1. Mode AI Asisten Virtual (Avatar 3D & Suara Natural)</h4>
                       <p style={styles.guideText}>
                         Rasakan pengalaman interaksi virtual yang hidup bersama avatar 3D anime interaktif berbasis model <strong>Pixiv VRM</strong>. Avatar dilengkapi dengan simulasi bernafas alami (<em>idle</em>), kedipan mata otomatis (<em>blink</em>), ekspresi wajah responsif (senang, terkejut, rileks), serta gestur dinamis.
                       </p>
                       <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.6' }}>
-                        <li><strong>Percakapan Suara Real-Time:</strong> Tekan tombol <strong>Mikrofon (🎙️)</strong> di bar kontrol bawah untuk berbicara langsung dalam bahasa Indonesia.</li>
+                        <li><strong>Percakapan Suara Real-Time:</strong> Tekan tombol <strong>Mikrofon</strong> di bar kontrol bawah untuk berbicara langsung dalam bahasa Indonesia.</li>
                         <li><strong>Sintesis Suara & Lip-Sync:</strong> Zeera merespon dengan suara natural <em>Microsoft Edge Neural TTS (id-ID-GadisNeural)</em> yang dipadukan dengan sinkronisasi gerakan bibir (<em>Lip-Sync</em>) presisi via Web Audio API.</li>
                         <li><strong>Input Teks Cepat:</strong> Anda juga dapat mengetik pesan singkat di kotak input bawah dan menekan Enter.</li>
                       </ul>
@@ -1001,7 +1087,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     borderColor: 'rgba(59, 130, 246, 0.35)',
                     backgroundColor: 'rgba(15, 23, 42, 0.8)'
                   }}>
-                    <div style={{ ...styles.guideIcon, backgroundColor: 'rgba(37, 99, 235, 0.25)' }}>💬</div>
+                    <div style={{ ...styles.guideIcon, backgroundColor: 'rgba(37, 99, 235, 0.25)' }}>
+                      <MessageSquare size={22} color="#38bdf8" />
+                    </div>
                     <div style={styles.guideContent}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                         <h4 style={{ ...styles.guideHeading, margin: 0 }}>2. Mode AI Text Chat & Manajemen Sesi (Local-First)</h4>
@@ -1021,9 +1109,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                         <li><strong>Penyimpanan Persisten (IndexedDB):</strong> Riwayat percakapan Anda otomatis tersimpan di memori browser secara <em>local-first</em> menggunakan database Dexie. Riwayat tidak akan hilang meskipun Anda merefresh browser, serta menjamin privasi penuh tanpa perlu server database terpisah.</li>
                         <li><strong>Daftar Riwayat di Sidebar:</strong> Semua percakapan yang pernah Anda lakukan tercatat rapi di panel samping kiri dan dapat diakses kembali kapan saja.</li>
                         <li><strong>Fitur Auto-Title Otomatis:</strong> Saat Anda memulai obrolan baru, sistem secara cerdas menamai judul percakapan dari kalimat pembuka Anda.</li>
-                        <li><strong>Navigasi Chat Baru Instan:</strong> Mengklik menu utama <strong>AI Text Chat</strong> di sidebar atau tombol <strong>+ Baru</strong> akan selalu membuka lembar obrolan baru (0 pesan), sehingga Anda bebas memulai topik baru tanpa menimpa sesi lama.</li>
+                        <li><strong>Navigasi Chat Baru Instan:</strong> Mengklik menu utama <strong>AI Text Chat</strong> di sidebar atau tombol <strong>Baru</strong> akan selalu membuka lembar obrolan baru (0 pesan), sehingga Anda bebas memulai topik baru tanpa menimpa sesi lama.</li>
                         <li><strong>Pintasan Keyboard Efisien:</strong> Tekan <strong>Enter</strong> untuk mengirim pesan, atau <strong>Shift + Enter</strong> untuk menyisipkan baris baru di textarea.</li>
-                        <li><strong>Manajemen & Hapus Sesi:</strong> Hapus obrolan yang tidak diperlukan melalui tombol <strong>✕</strong> di daftar riwayat sidebar atau tombol <strong>🗑️ Hapus Chat</strong> di header.</li>
+                        <li><strong>Manajemen & Hapus Sesi:</strong> Hapus obrolan yang tidak diperlukan melalui tombol ikon sampah di daftar riwayat sidebar atau tombol <strong>Hapus Chat</strong> di header.</li>
                       </ul>
                     </div>
                   </div>
@@ -1034,7 +1122,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>⚡</div>
+                    <div style={styles.guideIcon}>
+                      <Zap size={22} color="#fbbf24" />
+                    </div>
                     <div style={styles.guideContent}>
                       <h4 style={styles.guideHeading}>3. Arsitektur Performa Tanpa Reload (CSS-Based Multi-Stage)</h4>
                       <p style={styles.guideText}>
@@ -1049,11 +1139,13 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>📱</div>
+                    <div style={styles.guideIcon}>
+                      <Smartphone size={22} color="#a78bfa" />
+                    </div>
                     <div style={styles.guideContent}>
                       <h4 style={styles.guideHeading}>4. Tampilan Responsif Layar Smartphone</h4>
                       <p style={styles.guideText}>
-                        Antarmuka Zeera AI sepenuhnya adaptif untuk perangkat ponsel cerdas dan tablet. Pada layar mobile, sidebar navigasi berubah menjadi menu geser (<em>drawer overlay</em>) yang dapat dibuka melalui tombol hamburger (<strong>☰</strong>) di pojok kiri atas, dan kamera panggung 3D secara otomatis menyesuaikan rasio vertikal layar.
+                        Antarmuka Zeera AI sepenuhnya adaptif untuk perangkat ponsel cerdas dan tablet. Pada layar mobile, sidebar navigasi berubah menjadi menu geser (<em>drawer overlay</em>) yang dapat dibuka melalui tombol hamburger di pojok kiri atas, dan kamera panggung 3D secara otomatis menyesuaikan rasio vertikal layar.
                       </p>
                     </div>
                   </div>
@@ -1064,7 +1156,9 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>💡</div>
+                    <div style={styles.guideIcon}>
+                      <Lightbulb size={22} color="#34d399" />
+                    </div>
                     <div style={styles.guideContent}>
                       <h4 style={styles.guideHeading}>5. Tips Berinteraksi dengan Zeera AI</h4>
                       <p style={styles.guideText}>
@@ -1112,10 +1206,16 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                   rel="noreferrer"
                   style={{
                     ...styles.watermarkLink,
-                    fontSize: isMobile ? '11px' : '12px'
+                    fontSize: isMobile ? '11px' : '12px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px'
                   }}
                 >
-                  Developed with 💙 by <span style={{ color: 'rgba(147, 197, 253, 0.9)', fontWeight: 600 }}>Raditya Rai Zeeshan</span>
+                  <span>Developed with</span>
+                  <Heart size={12} color="#3b82f6" fill="#3b82f6" />
+                  <span>by</span>
+                  <span style={{ color: 'rgba(147, 197, 253, 0.9)', fontWeight: 600 }}>Raditya Rai Zeeshan</span>
                 </a>
               </div>
             </div>
