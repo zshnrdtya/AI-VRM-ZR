@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { useLiveQuery } from 'dexie-react-hooks'
+import ReactMarkdown from 'react-markdown'
 import { db, MessageItem } from '../lib/db'
 import LOGO_URL from '../assets/logo-zz.png'
 
@@ -406,15 +407,177 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
                     borderRadius: isMobile ? '14px' : '16px'
                   }}
                 >
-                  <p
-                    style={{
-                      ...chatStyles.messageText,
-                      fontSize: isMobile ? '14px' : '14.5px',
-                      lineHeight: isMobile ? '1.5' : '1.6'
-                    }}
-                  >
-                    {msg.text}
-                  </p>
+                  {isUser ? (
+                    <p
+                      style={{
+                        ...chatStyles.messageText,
+                        fontSize: isMobile ? '14px' : '14.5px',
+                        lineHeight: isMobile ? '1.5' : '1.6'
+                      }}
+                    >
+                      {msg.text}
+                    </p>
+                  ) : (
+                    <div style={chatStyles.markdownContainer}>
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => (
+                            <p
+                              style={{
+                                ...chatStyles.messageText,
+                                fontSize: isMobile ? '14px' : '14.5px',
+                                lineHeight: isMobile ? '1.55' : '1.65',
+                                color: '#e2e8f0',
+                                margin: '0 0 8px 0'
+                              }}
+                            >
+                              {children}
+                            </p>
+                          ),
+                          strong: ({ children }) => (
+                            <strong style={{ fontWeight: 650, color: '#ffffff' }}>
+                              {children}
+                            </strong>
+                          ),
+                          em: ({ children }) => (
+                            <em style={{ fontStyle: 'italic', color: '#cbd5e1' }}>
+                              {children}
+                            </em>
+                          ),
+                          ul: ({ children }) => (
+                            <ul
+                              style={{
+                                margin: '4px 0 8px 0',
+                                paddingLeft: '20px',
+                                listStyleType: 'disc',
+                                color: '#e2e8f0'
+                              }}
+                            >
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol
+                              style={{
+                                margin: '4px 0 8px 0',
+                                paddingLeft: '20px',
+                                listStyleType: 'decimal',
+                                color: '#e2e8f0'
+                              }}
+                            >
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li
+                              style={{
+                                margin: '3px 0',
+                                fontSize: isMobile ? '14px' : '14.5px',
+                                lineHeight: isMobile ? '1.5' : '1.6',
+                                color: '#e2e8f0'
+                              }}
+                            >
+                              {children}
+                            </li>
+                          ),
+                          code: ({ children, className }: any) => {
+                            const isCodeBlock = Boolean(className)
+                            if (isCodeBlock) {
+                              return (
+                                <code
+                                  style={{
+                                    fontFamily: 'Consolas, Menlo, Monaco, monospace',
+                                    fontSize: '13px',
+                                    color: '#e2e8f0'
+                                  }}
+                                >
+                                  {children}
+                                </code>
+                              )
+                            }
+                            return (
+                              <code
+                                style={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                                  padding: '2px 5px',
+                                  borderRadius: '4px',
+                                  fontSize: '0.9em',
+                                  fontFamily: 'Consolas, Menlo, Monaco, monospace',
+                                  color: '#93c5fd',
+                                  wordBreak: 'break-word'
+                                }}
+                              >
+                                {children}
+                              </code>
+                            )
+                          },
+                          pre: ({ children }) => (
+                            <pre
+                              style={{
+                                backgroundColor: '#0d1322',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '8px',
+                                padding: '10px 14px',
+                                overflowX: 'auto',
+                                margin: '8px 0',
+                                fontSize: '13px'
+                              }}
+                            >
+                              {children}
+                            </pre>
+                          ),
+                          a: ({ href, children }) => (
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: '#60a5fa',
+                                textDecoration: 'underline',
+                                wordBreak: 'break-all'
+                              }}
+                            >
+                              {children}
+                            </a>
+                          ),
+                          blockquote: ({ children }) => (
+                            <blockquote
+                              style={{
+                                borderLeft: '3px solid #3b82f6',
+                                paddingLeft: '12px',
+                                margin: '8px 0',
+                                color: '#cbd5e1',
+                                fontStyle: 'italic',
+                                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                                paddingTop: '4px',
+                                paddingBottom: '4px',
+                                borderRadius: '0 6px 6px 0'
+                              }}
+                            >
+                              {children}
+                            </blockquote>
+                          ),
+                          h1: ({ children }) => (
+                            <h1 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: 700, margin: '8px 0 4px 0', color: '#ffffff' }}>
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 style={{ fontSize: isMobile ? '15px' : '16px', fontWeight: 700, margin: '6px 0 4px 0', color: '#ffffff' }}>
+                              {children}
+                            </h2>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 600, margin: '6px 0 3px 0', color: '#ffffff' }}>
+                              {children}
+                            </h3>
+                          )
+                        }}
+                      >
+                        {msg.text}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                   <span style={chatStyles.timestamp}>{msg.timestamp}</span>
                 </div>
               </div>
@@ -651,6 +814,13 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     margin: 0,
     fontSize: '14.5px',
     whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word'
+  },
+  markdownContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    overflowWrap: 'break-word',
     wordBreak: 'break-word'
   },
   timestamp: {
