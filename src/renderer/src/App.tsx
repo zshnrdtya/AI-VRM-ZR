@@ -187,7 +187,11 @@ export default function App() {
 
   const [status, setStatus] = useState<AppStatus>('idle')
   const [inputText, setInputText] = useState('')
-  const [lastResponse, setLastResponse] = useState<string>('Halo! Aku Zeera, asisten virtual 3D-mu. Ada yang bisa kubantu hari ini?')
+  const [currentUserMsg, setCurrentUserMsg] = useState<{ text: string; timestamp: string } | null>(null)
+  const [currentAiMsg, setCurrentAiMsg] = useState<{ text: string; timestamp: string } | null>({
+    text: 'Halo! Aku Zeera, asisten virtual 3D-mu. Ada yang bisa kubantu hari ini?',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  })
   const [isListening, setIsListening] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -384,6 +388,9 @@ export default function App() {
     const message = (textOverride !== undefined ? textOverride : inputText).trim()
     if (!message || status === 'processing' || status === 'speaking') return
 
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    setCurrentUserMsg({ text: message, timestamp: nowTime })
+
     setInputText('')
     setErrorMessage(null)
     setStatus('processing')
@@ -391,7 +398,7 @@ export default function App() {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
     if (!apiKey) {
       const fallback = 'Kunci VITE_GEMINI_API_KEY belum diset di file .env. Mohon periksa kembali konfigurasi Anda.'
-      setLastResponse(fallback)
+      setCurrentAiMsg({ text: fallback, timestamp: nowTime })
       setStatus('error')
       setErrorMessage(fallback)
       return
@@ -469,7 +476,8 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
         conversationHistoryRef.current = conversationHistoryRef.current.slice(-16)
       }
 
-      setLastResponse(parsed.text)
+      const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      setCurrentAiMsg({ text: parsed.text, timestamp: replyTime })
       if (parsed.emotion) setEmotion(parsed.emotion)
       if (parsed.gesture) setGesture(parsed.gesture)
 
@@ -477,7 +485,8 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
     } catch (err: any) {
       console.error('Gemini API error:', err)
       const errText = 'Maaf, sepertinya sedang ada kendala koneksi ke server AI.'
-      setLastResponse(errText)
+      const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      setCurrentAiMsg({ text: errText, timestamp: replyTime })
       setErrorMessage(err?.message || 'Terjadi kesalahan pada Gemini API')
       setStatus('error')
       setTimeout(() => setStatus('idle'), 4000)
@@ -756,37 +765,6 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
 
           {/* 3D Canvas Main Stage */}
           <main style={styles.mainArea}>
-            {/* Speech Bubble */}
-            {lastResponse && (
-              <div style={{
-                ...styles.speechBubbleWrapper,
-                top: isMobile ? '8px' : '14px',
-                padding: isMobile ? '0 12px' : '0 20px'
-              }}>
-                <div style={{
-                  ...styles.speechBubble,
-                  maxWidth: isMobile ? '94%' : '520px',
-                  padding: isMobile ? '8px 14px' : '10px 20px',
-                  borderRadius: isMobile ? '12px' : '16px'
-                }}>
-                  <p style={{
-                    ...styles.speechText,
-                    fontSize: isMobile ? '13px' : '14px'
-                  }}>
-                    {lastResponse}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Error Notification */}
-            {errorMessage && (
-              <div style={{ ...styles.errorBanner, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <AlertTriangle size={15} color="#fca5a5" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
             {/* 3D Canvas */}
             <div style={styles.canvasContainer}>
               <AvatarCanvas
@@ -797,6 +775,90 @@ HANYA keluarkan raw JSON tanpa kutipan backtick (\`\`\`json).`
                 onControllersReady={handleControllersReady}
               />
             </div>
+
+            {/* Floating Chat Bubbles Overlay (Left: User, Right: Zeera AI) */}
+            <div
+              style={{
+                ...styles.overlayChatContainer,
+                flexDirection: isMobile ? 'column' : 'row',
+                justifyContent: isMobile ? 'space-between' : 'space-between',
+                alignItems: isMobile ? 'stretch' : 'center',
+                padding: isMobile ? '12px 14px' : '0 40px',
+                gap: isMobile ? '12px' : '24px'
+              }}
+            >
+              {/* Balon Pengguna (Kiri) */}
+              <div
+                style={{
+                  ...styles.bubbleWrapper,
+                  justifyContent: 'flex-start',
+                  alignItems: isMobile ? 'flex-start' : 'center'
+                }}
+              >
+                {currentUserMsg && (
+                  <div
+                    style={{
+                      ...styles.leftUserBubble,
+                      maxWidth: isMobile ? '82%' : '320px',
+                      position: 'relative'
+                    }}
+                  >
+                    {!isMobile && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: '-8px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: 0,
+                          height: 0,
+                          borderTop: '7px solid transparent',
+                          borderBottom: '7px solid transparent',
+                          borderLeft: '8px solid #2563eb'
+                        }}
+                      />
+                    )}
+                    <div style={styles.bubbleHeader}>
+                      <span style={styles.userBubbleAuthor}>Anda</span>
+                      <span style={styles.userBubbleTime}>{currentUserMsg.timestamp}</span>
+                    </div>
+                    <p style={styles.bubbleText}>{currentUserMsg.text}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Balon AI (Kanan) */}
+              <div
+                style={{
+                  ...styles.bubbleWrapper,
+                  justifyContent: 'flex-end',
+                  alignItems: isMobile ? 'flex-end' : 'center'
+                }}
+              >
+                {currentAiMsg && (
+                  <div
+                    style={{
+                      ...styles.rightAiBubble,
+                      maxWidth: isMobile ? '88%' : '360px'
+                    }}
+                  >
+                    <div style={styles.bubbleHeader}>
+                      <span style={styles.aiBubbleAuthor}>Zeera</span>
+                      <span style={styles.aiBubbleTime}>{currentAiMsg.timestamp}</span>
+                    </div>
+                    <p style={{ ...styles.bubbleText, color: '#e2e8f0' }}>{currentAiMsg.text}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Error Notification */}
+            {errorMessage && (
+              <div style={{ ...styles.errorBanner, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertTriangle size={15} color="#fca5a5" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
           </main>
 
           {/* Bottom Control Bar */}
@@ -1609,26 +1671,77 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     alignItems: 'center'
   },
-  speechBubbleWrapper: {
+  overlayChatContainer: {
     position: 'absolute',
+    top: 0,
+    left: 0,
     width: '100%',
+    height: '100%',
     display: 'flex',
-    justifyContent: 'center',
+    pointerEvents: 'none',
     zIndex: 10,
+    boxSizing: 'border-box'
+  },
+  bubbleWrapper: {
+    display: 'flex',
+    flex: 1,
     pointerEvents: 'none'
   },
-  speechBubble: {
-    backgroundColor: 'rgba(11, 20, 42, 0.9)',
-    backdropFilter: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.14)',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45)',
-    pointerEvents: 'auto'
+  leftUserBubble: {
+    backgroundColor: '#2563eb',
+    color: '#ffffff',
+    padding: '12px 18px',
+    borderRadius: '16px 16px 4px 16px',
+    boxShadow: '0 8px 24px rgba(37, 99, 235, 0.35)',
+    pointerEvents: 'auto',
+    wordBreak: 'break-word',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
   },
-  speechText: {
+  rightAiBubble: {
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backdropFilter: 'blur(16px)',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    color: '#f1f5f9',
+    padding: '14px 20px',
+    borderRadius: '16px 16px 16px 4px',
+    boxShadow: '0 10px 32px rgba(0, 0, 0, 0.45)',
+    pointerEvents: 'auto',
+    wordBreak: 'break-word',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+  },
+  bubbleHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '14px',
+    marginBottom: '6px'
+  },
+  userBubbleAuthor: {
+    fontSize: '11.5px',
+    fontWeight: 600,
+    color: '#dbeafe',
+    letterSpacing: '0.2px'
+  },
+  userBubbleTime: {
+    fontSize: '10.5px',
+    color: 'rgba(255, 255, 255, 0.7)'
+  },
+  aiBubbleAuthor: {
+    fontSize: '11.5px',
+    fontWeight: 600,
+    color: '#60a5fa',
+    letterSpacing: '0.2px'
+  },
+  aiBubbleTime: {
+    fontSize: '10.5px',
+    color: 'rgba(148, 163, 184, 0.7)'
+  },
+  bubbleText: {
     margin: 0,
-    lineHeight: '1.5',
-    color: '#e2e8f0',
-    textAlign: 'center'
+    fontSize: '13.5px',
+    lineHeight: '1.55',
+    color: '#ffffff',
+    whiteSpace: 'pre-wrap'
   },
   errorBanner: {
     position: 'absolute',
