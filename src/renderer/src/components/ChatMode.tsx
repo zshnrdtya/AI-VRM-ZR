@@ -12,7 +12,9 @@ import {
   Sparkles,
   Lightbulb,
   MessageSquare,
-  Compass
+  Compass,
+  Copy,
+  Check
 } from 'lucide-react'
 
 interface ChatModeProps {
@@ -41,6 +43,7 @@ export const ChatMode: React.FC<ChatModeProps> = ({
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [streamingText, setStreamingText] = useState('')
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Riwayat obrolan sesi untuk konteks Gemini
@@ -232,6 +235,22 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
         console.error('[Zeera DB] Gagal menghapus sesi:', err)
       }
     }
+  }
+
+  // Salin isi pesan balasan AI ke clipboard dengan feedback visual selama 2 detik
+  const handleCopy = (id: string, text: string) => {
+    if (!text) return
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopiedId(id)
+        setTimeout(() => {
+          setCopiedId((prev) => (prev === id ? null : prev))
+        }, 2000)
+      })
+      .catch((err) => {
+        console.error('[Zeera Chat] Gagal menyalin pesan:', err)
+      })
   }
 
   // Komponen markdown styling yang digunakan untuk pesan tersimpan maupun streaming
@@ -605,7 +624,40 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
                       </ReactMarkdown>
                     </div>
                   )}
-                  <span style={chatStyles.timestamp}>{msg.timestamp}</span>
+
+                  {isUser ? (
+                    <span style={chatStyles.timestamp}>{msg.timestamp}</span>
+                  ) : (
+                    <div style={chatStyles.bubbleFooter}>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(msg.id, msg.text)}
+                        style={{
+                          ...chatStyles.copyButton,
+                          color: copiedId === msg.id ? '#34d399' : 'rgba(255, 255, 255, 0.55)',
+                          borderColor:
+                            copiedId === msg.id ? 'rgba(52, 211, 153, 0.4)' : 'rgba(255, 255, 255, 0.08)',
+                          backgroundColor:
+                            copiedId === msg.id ? 'rgba(52, 211, 153, 0.12)' : 'rgba(255, 255, 255, 0.04)'
+                        }}
+                        title={copiedId === msg.id ? 'Tersalin ke clipboard!' : 'Salin pesan'}
+                        aria-label={copiedId === msg.id ? 'Tersalin' : 'Salin pesan'}
+                      >
+                        {copiedId === msg.id ? (
+                          <>
+                            <Check size={12} />
+                            <span>Tersalin</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={12} />
+                            <span>Salin</span>
+                          </>
+                        )}
+                      </button>
+                      <span style={{ ...chatStyles.timestamp, marginTop: 0 }}>{msg.timestamp}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )
@@ -903,6 +955,28 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     opacity: 0.55,
     marginTop: '6px',
     textAlign: 'right'
+  },
+  bubbleFooter: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: '6px',
+    paddingTop: '4px',
+    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+    gap: '8px'
+  },
+  copyButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '5px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '6px',
+    padding: '3px 8px',
+    fontSize: '11px',
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    userSelect: 'none'
   },
   typingText: {
     fontSize: '13px',
