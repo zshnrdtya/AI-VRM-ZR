@@ -28,6 +28,7 @@ node_modules/
 # OS metadata
 .DS_Store
 Thumbs.db
+Screenshot*.png
 
 # ==========================================
 # CUSTOM RULES: AI VTuber Desktop Assistant

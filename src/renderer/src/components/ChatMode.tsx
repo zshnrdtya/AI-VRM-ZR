@@ -74,6 +74,10 @@ export const ChatMode: React.FC<ChatModeProps> = ({
           }
         }
       }
+      // Aturan Gemini API: pesan terakhir dalam riwayat yang dimasukkan ke startChat harus ber-role 'model'
+      while (history.length > 0 && history[history.length - 1].role === 'user') {
+        history.pop()
+      }
       conversationHistoryRef.current = history.slice(-20)
     } else {
       conversationHistoryRef.current = []
@@ -139,6 +143,12 @@ export const ChatMode: React.FC<ChatModeProps> = ({
       let aiReply = ''
       let lastError: any = null
 
+      // Pastikan history untuk startChat selalu berpasangan dan pesan terakhir adalah dari 'model'
+      const validHistory = conversationHistoryRef.current.filter((item, idx, arr) => {
+        if (idx === arr.length - 1 && item.role === 'user') return false
+        return true
+      })
+
       // Loop coba model-model teks terbaik dengan streaming
       for (const modelName of TEXT_MODELS) {
         try {
@@ -151,7 +161,7 @@ Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.`
           })
 
           const chatSession = model.startChat({
-            history: conversationHistoryRef.current
+            history: validHistory
           })
 
           const result = await chatSession.sendMessageStream(text)
