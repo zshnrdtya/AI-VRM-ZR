@@ -922,7 +922,9 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     padding: '12px 18px',
     borderRadius: '16px',
     lineHeight: '1.6',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)'
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
+    userSelect: 'text',
+    WebkitUserSelect: 'text'
   },
   userBubble: {
     backgroundColor: '#1d4ed8',
@@ -940,21 +942,28 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     margin: 0,
     fontSize: '14.5px',
     whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word'
+    wordBreak: 'break-word',
+    userSelect: 'text',
+    WebkitUserSelect: 'text',
+    cursor: 'text'
   },
   markdownContainer: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
     overflowWrap: 'break-word',
-    wordBreak: 'break-word'
+    wordBreak: 'break-word',
+    userSelect: 'text',
+    WebkitUserSelect: 'text',
+    cursor: 'text'
   },
   timestamp: {
     display: 'block',
     fontSize: '10px',
     opacity: 0.55,
     marginTop: '6px',
-    textAlign: 'right'
+    textAlign: 'right',
+    userSelect: 'none'
   },
   bubbleFooter: {
     display: 'flex',
