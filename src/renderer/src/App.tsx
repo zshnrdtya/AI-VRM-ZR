@@ -40,7 +40,12 @@ export default function App() {
   const [activeSessionId, setActiveSessionId] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEY) || ''
   })
-  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  const checkIsMobile = () => {
+    if (typeof window === 'undefined') return false
+    return window.innerWidth < 1024 || (Boolean(window.matchMedia) && window.matchMedia('(max-width: 1023px)').matches)
+  }
+
+  const [isMobile, setIsMobile] = useState(checkIsMobile)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Ambil seluruh daftar sesi dari IndexedDB secara reaktif
@@ -208,17 +213,40 @@ export default function App() {
     }
   }, [])
 
-  // Responsive mobile detector
+  // Responsive mobile/tablet detector with immediate sync and media query listener
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 768
+      const mobile = checkIsMobile()
       setIsMobile(mobile)
       if (!mobile) {
         setIsSidebarOpen(false)
       }
     }
+
+    // Run immediately on mount to sync after viewport meta evaluation
+    handleResize()
+
+    const mql = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 1023px)') : null
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      setIsMobile(e.matches)
+      if (!e.matches) {
+        setIsSidebarOpen(false)
+      }
+    }
+
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+    if (mql && mql.addEventListener) {
+      mql.addEventListener('change', handleMediaChange)
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+      if (mql && mql.removeEventListener) {
+        mql.removeEventListener('change', handleMediaChange)
+      }
+    }
   }, [])
 
   // Trigger resize when switching tabs to ensure 3D canvas scales properly
@@ -511,9 +539,10 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
   return (
     <div style={styles.appRoot}>
       {/* Mobile Backdrop Overlay */}
-      {isMobile && isSidebarOpen && (
+      {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
+          className="mobile-only"
           style={styles.mobileBackdrop}
         />
       )}
@@ -522,8 +551,10 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
       {/* SIDEBAR NAVIGATION */}
       {/* ============================================================ */}
       <aside
+        className={`sidebar-nav ${isMobile ? 'sidebar-mobile' : 'sidebar-desktop'}`}
         style={{
           ...styles.sidebar,
+          minWidth: isMobile ? 'auto' : '260px',
           ...(isMobile
             ? {
                 position: 'fixed',
@@ -531,12 +562,15 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                 left: 0,
                 bottom: 0,
                 width: '280px',
+                maxWidth: '85vw',
                 zIndex: 50,
                 transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
                 boxShadow: isSidebarOpen ? '8px 0 32px rgba(0,0,0,0.7)' : 'none',
                 transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 paddingTop: 'max(10px, env(safe-area-inset-top, 0px))',
-                paddingBottom: 'max(16px, env(safe-area-inset-bottom, 0px))'
+                paddingBottom: 'max(16px, env(safe-area-inset-bottom, 0px))',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch'
               }
             : {
                 position: 'relative',
@@ -553,15 +587,15 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               <span style={styles.sidebarBrandSubtitle}>Virtual 3D Assistant</span>
             </div>
           </div>
-          {isMobile && (
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              style={styles.sidebarCloseBtn}
-              title="Tutup Menu"
-            >
-              <X size={18} />
-            </button>
-          )}
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="mobile-only"
+            style={styles.sidebarCloseBtn}
+            title="Tutup Menu"
+            aria-label="Tutup Menu"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Navigation Menu */}
@@ -714,22 +748,22 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
           }}>
             <div style={styles.headerLeft}>
-              {isMobile && (
-                <button
-                  onClick={() => setIsSidebarOpen(true)}
-                  style={styles.hamburgerBtn}
-                  title="Buka Menu"
-                >
-                  <Menu size={20} />
-                </button>
-              )}
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="hamburger-btn"
+                style={styles.hamburgerBtn}
+                title="Buka Menu"
+                aria-label="Buka Menu"
+              >
+                <Menu size={20} />
+              </button>
               <h1 style={{
                 ...styles.brandTitle,
                 fontSize: isMobile ? '15px' : '17px'
               }}>
                 Zeera AI Avatar
               </h1>
-              {!isMobile && <span style={styles.headerBadge}>Interactive 3D</span>}
+              {!isMobile && <span style={styles.headerBadge} className="desktop-only">Interactive 3D</span>}
             </div>
 
             <div style={styles.headerRight}>
@@ -1025,15 +1059,15 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
           }}>
             <div style={styles.headerLeft}>
-              {isMobile && (
-                <button
-                  onClick={() => setIsSidebarOpen(true)}
-                  style={styles.hamburgerBtn}
-                  title="Buka Menu"
-                >
-                  <Menu size={20} />
-                </button>
-              )}
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="hamburger-btn"
+                style={styles.hamburgerBtn}
+                title="Buka Menu"
+                aria-label="Buka Menu"
+              >
+                <Menu size={20} />
+              </button>
               <h1 style={{
                 ...styles.brandTitle,
                 fontSize: isMobile ? '15px' : '17px'
@@ -1312,7 +1346,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     overflow: 'hidden',
     userSelect: 'none',
-    touchAction: 'none'
+    touchAction: 'manipulation'
   },
 
   // MOBILE BACKDROP
@@ -1370,13 +1404,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: 'none',
     color: '#94a3b8',
     fontSize: '16px',
-    width: '32px',
-    height: '32px',
+    width: '36px',
+    height: '36px',
     borderRadius: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    touchAction: 'manipulation',
+    WebkitTapHighlightColor: 'transparent'
   },
   navMenu: {
     padding: '16px 14px 8px 14px',
@@ -1598,18 +1634,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     minWidth: 0
   },
   hamburgerBtn: {
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(30, 41, 59, 0.7)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
     color: '#ffffff',
     fontSize: '18px',
-    width: '36px',
-    height: '36px',
-    borderRadius: '8px',
+    width: '38px',
+    height: '38px',
+    borderRadius: '10px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    flexShrink: 0
+    flexShrink: 0,
+    touchAction: 'manipulation',
+    WebkitTapHighlightColor: 'transparent',
+    transition: 'all 0.2s ease'
   },
   brandTitle: {
     margin: 0,

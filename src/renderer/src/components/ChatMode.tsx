@@ -446,16 +446,15 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             flex: 1
           }}
         >
-          {isMobile && (
-            <button
-              onClick={onOpenSidebar}
-              style={{ ...chatStyles.hamburgerBtn, flexShrink: 0 }}
-              title="Buka Menu"
-              aria-label="Buka Menu"
-            >
-              <Menu size={18} />
-            </button>
-          )}
+          <button
+            onClick={onOpenSidebar}
+            className="hamburger-btn"
+            style={{ ...chatStyles.hamburgerBtn, flexShrink: 0 }}
+            title="Buka Menu"
+            aria-label="Buka Menu"
+          >
+            <Menu size={20} />
+          </button>
           <div style={{ minWidth: 0, overflow: 'hidden' }}>
             <h1
               style={{
@@ -867,17 +866,20 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     gap: '8px'
   },
   hamburgerBtn: {
-    backgroundColor: 'rgba(30, 41, 59, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(30, 41, 59, 0.7)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
     color: '#ffffff',
     fontSize: '18px',
-    width: '36px',
-    height: '36px',
-    borderRadius: '8px',
+    width: '38px',
+    height: '38px',
+    borderRadius: '10px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    touchAction: 'manipulation',
+    WebkitTapHighlightColor: 'transparent',
+    transition: 'all 0.2s ease'
   },
   newChatBtn: {
     backgroundColor: 'rgba(37, 99, 235, 0.22)',
