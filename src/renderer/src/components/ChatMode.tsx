@@ -279,7 +279,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             ...chatStyles.messageText,
             fontSize: isMobile ? '14px' : '14.5px',
             lineHeight: isMobile ? '1.55' : '1.65',
-            color: '#e2e8f0',
+            color: 'var(--text-lead)',
             margin: '0 0 8px 0'
           }}
         >
@@ -287,10 +287,10 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         </p>
       ),
       strong: ({ children }: any) => (
-        <strong style={{ fontWeight: 650, color: '#ffffff' }}>{children}</strong>
+        <strong style={{ fontWeight: 650, color: 'var(--text-primary)' }}>{children}</strong>
       ),
       em: ({ children }: any) => (
-        <em style={{ fontStyle: 'italic', color: '#cbd5e1' }}>{children}</em>
+        <em style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>{children}</em>
       ),
       ul: ({ children }: any) => (
         <ul
@@ -298,7 +298,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             margin: '4px 0 8px 0',
             paddingLeft: '20px',
             listStyleType: 'disc',
-            color: '#e2e8f0'
+            color: 'var(--text-lead)'
           }}
         >
           {children}
@@ -310,7 +310,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             margin: '4px 0 8px 0',
             paddingLeft: '20px',
             listStyleType: 'decimal',
-            color: '#e2e8f0'
+            color: 'var(--text-lead)'
           }}
         >
           {children}
@@ -322,7 +322,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             margin: '3px 0',
             fontSize: isMobile ? '14px' : '14.5px',
             lineHeight: isMobile ? '1.5' : '1.6',
-            color: '#e2e8f0'
+            color: 'var(--text-lead)'
           }}
         >
           {children}
@@ -336,7 +336,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               style={{
                 fontFamily: 'Consolas, Menlo, Monaco, monospace',
                 fontSize: '13px',
-                color: '#e2e8f0'
+                color: 'var(--text-lead)'
               }}
             >
               {children}
@@ -346,12 +346,12 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         return (
           <code
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              backgroundColor: 'var(--bg-badge)',
               padding: '2px 5px',
               borderRadius: '4px',
               fontSize: '0.9em',
               fontFamily: 'Consolas, Menlo, Monaco, monospace',
-              color: '#93c5fd',
+              color: 'var(--accent-blue-text)',
               wordBreak: 'break-word'
             }}
           >
@@ -362,8 +362,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
       pre: ({ children }: any) => (
         <pre
           style={{
-            backgroundColor: '#0d1322',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'var(--bg-card-solid)',
+            border: '1px solid var(--border-color)',
             borderRadius: '8px',
             padding: '10px 14px',
             overflowX: 'auto',
@@ -380,7 +380,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            color: '#60a5fa',
+            color: 'var(--accent-blue-text)',
             textDecoration: 'underline',
             wordBreak: 'break-all'
           }}
@@ -391,12 +391,12 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
       blockquote: ({ children }: any) => (
         <blockquote
           style={{
-            borderLeft: '3px solid #3b82f6',
+            borderLeft: '3px solid var(--accent-blue)',
             paddingLeft: '12px',
             margin: '8px 0',
-            color: '#cbd5e1',
+            color: 'var(--text-lead)',
             fontStyle: 'italic',
-            backgroundColor: 'rgba(59, 130, 246, 0.08)',
+            backgroundColor: 'var(--accent-blue-subtle)',
             paddingTop: '4px',
             paddingBottom: '4px',
             borderRadius: '0 6px 6px 0'
@@ -406,17 +406,17 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         </blockquote>
       ),
       h1: ({ children }: any) => (
-        <h1 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: 700, margin: '8px 0 4px 0', color: '#ffffff' }}>
+        <h1 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: 700, margin: '8px 0 4px 0', color: 'var(--text-primary)' }}>
           {children}
         </h1>
       ),
       h2: ({ children }: any) => (
-        <h2 style={{ fontSize: isMobile ? '15px' : '16px', fontWeight: 700, margin: '6px 0 4px 0', color: '#ffffff' }}>
+        <h2 style={{ fontSize: isMobile ? '15px' : '16px', fontWeight: 700, margin: '6px 0 4px 0', color: 'var(--text-primary)' }}>
           {children}
         </h2>
       ),
       h3: ({ children }: any) => (
-        <h3 style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 600, margin: '6px 0 3px 0', color: '#ffffff' }}>
+        <h3 style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 600, margin: '6px 0 3px 0', color: 'var(--text-primary)' }}>
           {children}
         </h3>
       )
@@ -831,19 +831,21 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     flexDirection: 'column',
     width: '100%',
     height: '100%',
-    backgroundColor: '#070b15',
-    backgroundImage: 'radial-gradient(ellipse at top, #0f1c3f 0%, #070b15 70%)',
+    backgroundColor: 'var(--bg-main)',
+    backgroundImage: 'var(--bg-gradient)',
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    transition: 'background-color 0.25s ease'
   },
   header: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(10, 16, 32, 0.92)',
+    backgroundColor: 'var(--bg-header)',
     backdropFilter: 'blur(16px)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-    zIndex: 10
+    borderBottom: '1px solid var(--border-color)',
+    zIndex: 10,
+    transition: 'background-color 0.25s ease, border-color 0.25s ease'
   },
   headerLeft: {
     display: 'flex',
@@ -854,11 +856,11 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     margin: 0,
     fontWeight: 700,
     letterSpacing: '0.3px',
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   subtitle: {
     fontSize: '11px',
-    color: '#60a5fa',
+    color: 'var(--accent-blue-text)',
     fontWeight: 500
   },
   headerRight: {
@@ -867,9 +869,9 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     gap: '8px'
   },
   hamburgerBtn: {
-    backgroundColor: 'rgba(30, 41, 59, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    color: '#ffffff',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-card)',
+    color: 'var(--text-primary)',
     fontSize: '18px',
     width: '38px',
     height: '38px',
@@ -883,9 +885,9 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     transition: 'all 0.2s ease'
   },
   newChatBtn: {
-    backgroundColor: 'rgba(37, 99, 235, 0.22)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     border: '1px solid rgba(59, 130, 246, 0.4)',
-    color: '#93c5fd',
+    color: 'var(--accent-blue-text)',
     padding: '6px 12px',
     borderRadius: '8px',
     fontSize: '12px',
@@ -897,9 +899,9 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     gap: '4px'
   },
   clearBtn: {
-    backgroundColor: 'rgba(30, 41, 59, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#cbd5e1',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-secondary)',
     padding: '6px 12px',
     borderRadius: '8px',
     fontSize: '12px',
@@ -933,28 +935,28 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     height: '34px',
     borderRadius: '10px',
     objectFit: 'contain',
-    backgroundColor: '#0f172a',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
     flexShrink: 0,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
   },
   bubble: {
     padding: '12px 18px',
     borderRadius: '16px',
     lineHeight: '1.6',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
     userSelect: 'text',
     WebkitUserSelect: 'text'
   },
   userBubble: {
-    backgroundColor: '#1d4ed8',
+    backgroundColor: 'var(--accent-blue)',
     color: '#ffffff',
     borderBottomRightRadius: '4px'
   },
   assistantBubble: {
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#f1f5f9',
+    backgroundColor: 'var(--bg-bubble-ai)',
+    border: '1px solid var(--border-card)',
+    color: 'var(--text-primary)',
     backdropFilter: 'blur(12px)',
     borderBottomLeftRadius: '4px'
   },
@@ -980,7 +982,7 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   timestamp: {
     display: 'block',
     fontSize: '10px',
-    opacity: 0.55,
+    color: 'var(--text-muted)',
     marginTop: '6px',
     textAlign: 'right',
     userSelect: 'none'
@@ -991,14 +993,16 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'space-between',
     marginTop: '6px',
     paddingTop: '4px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+    borderTop: '1px solid var(--border-color)',
     gap: '8px'
   },
   copyButton: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '5px',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-secondary)',
     borderRadius: '6px',
     padding: '3px 8px',
     fontSize: '11px',
@@ -1009,33 +1013,35 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   },
   typingText: {
     fontSize: '13px',
-    color: '#93c5fd',
+    color: 'var(--accent-blue-text)',
     fontStyle: 'italic'
   },
   footer: {
-    backgroundColor: 'rgba(8, 14, 28, 0.94)',
+    backgroundColor: 'var(--bg-footer)',
     backdropFilter: 'blur(18px)',
-    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-    paddingTop: '12px'
+    borderTop: '1px solid var(--border-color)',
+    paddingTop: '12px',
+    transition: 'background-color 0.25s ease, border-color 0.25s ease'
   },
   inputCard: {
     maxWidth: '850px',
     margin: '0 auto',
-    backgroundColor: '#10182b',
-    border: '1px solid rgba(255, 255, 255, 0.14)',
+    backgroundColor: 'var(--bg-input)',
+    border: '1px solid var(--border-card)',
     borderRadius: '14px',
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
     gap: '10px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+    transition: 'all 0.25s ease'
   },
   textarea: {
     flex: 1,
     backgroundColor: 'transparent',
     border: 'none',
     outline: 'none',
-    color: '#ffffff',
+    color: 'var(--text-primary)',
     fontSize: '14px',
     resize: 'none',
     fontFamily: 'inherit',
@@ -1043,7 +1049,7 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     maxHeight: '120px'
   },
   sendBtn: {
-    backgroundColor: '#2563eb',
+    backgroundColor: 'var(--accent-blue)',
     color: '#ffffff',
     border: 'none',
     borderRadius: '10px',
@@ -1067,7 +1073,7 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     width: '64px',
     height: '64px',
     borderRadius: '18px',
-    backgroundColor: 'rgba(37, 99, 235, 0.14)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     border: '1px solid rgba(59, 130, 246, 0.3)',
     display: 'flex',
     alignItems: 'center',
@@ -1084,12 +1090,12 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     margin: '0 0 8px 0',
     fontSize: '17px',
     fontWeight: 700,
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   emptyDesc: {
     margin: '0 0 18px 0',
     fontSize: '13px',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
     lineHeight: '1.5'
   },
   suggestionsWrapper: {
@@ -1099,9 +1105,9 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     width: '100%'
   },
   suggestionChip: {
-    backgroundColor: 'rgba(30, 41, 59, 0.55)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#cbd5e1',
+    backgroundColor: 'var(--bg-guide-item)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-lead)',
     padding: '10px 14px',
     borderRadius: '10px',
     fontSize: '13px',
