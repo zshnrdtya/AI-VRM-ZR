@@ -198,22 +198,6 @@ export class VRMScene {
     this.renderer.setSize(width, height)
   }
 
-  /**
-   * Mengubah background Three.js scene secara dinamis berdasarkan tema aplikasi.
-   * Pada mode terang ('light'), Three.js menggunakan background studio bernuansa soft slate (#c2cbd6)
-   * agar siluet 3D avatar & warna rambut terang memiliki kontras yang tegas.
-   * Pada mode gelap ('dark'), scene background dibuat transparan agar menyatu dengan gradien gelap aplikasi.
-   */
-  setTheme(theme: 'dark' | 'light'): void {
-    if (theme === 'light') {
-      this.scene.background = new THREE.Color(0xc2cbd6)
-      this.renderer.setClearColor(0xc2cbd6, 1)
-    } else {
-      this.scene.background = null
-      this.renderer.setClearColor(0x000000, 0)
-    }
-  }
-
   /** Cleanup resources */
   dispose(): void {
     this.stop()
