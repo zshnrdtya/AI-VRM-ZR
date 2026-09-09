@@ -643,7 +643,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   )}
 
                   {isUser ? (
-                    <span style={chatStyles.timestamp}>{msg.timestamp}</span>
+                    <span style={{ ...chatStyles.timestamp, color: 'rgba(255, 255, 255, 0.8)' }}>{msg.timestamp}</span>
                   ) : (
                     <div style={chatStyles.bubbleFooter}>
                       <button
@@ -985,11 +985,13 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   },
   timestamp: {
     display: 'block',
-    fontSize: '10px',
+    fontSize: '11px',
+    fontWeight: 500,
     color: 'var(--text-secondary)',
     marginTop: '6px',
     textAlign: 'right',
-    userSelect: 'none'
+    userSelect: 'none',
+    letterSpacing: '0.2px'
   },
   bubbleFooter: {
     display: 'flex',
