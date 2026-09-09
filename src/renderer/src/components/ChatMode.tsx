@@ -33,6 +33,47 @@ const TEXT_MODELS = [
   'gemini-flash-lite-latest'
 ]
 
+/**
+ * Memeriksa apakah dua timestamp berada pada hari kalender yang sama
+ */
+function isSameDay(ts1?: number, ts2?: number): boolean {
+  if (!ts1 || !ts2) return false
+  const d1 = new Date(ts1)
+  const d2 = new Date(ts2)
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  )
+}
+
+/**
+ * Memformat timestamp menjadi teks pemisah tanggal Bahasa Indonesia yang ramah pengguna:
+ * "Hari Ini", "Kemarin", atau format tanggal lengkap (contoh: "9 September 2026")
+ */
+function formatDateDivider(timestamp?: number): string {
+  if (!timestamp) return 'Hari Ini'
+  const date = new Date(timestamp)
+  const now = new Date()
+
+  // Normalisasi waktu ke awal hari (00:00:00) untuk perbandingan hari kalender murni
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+  const oneDay = 24 * 60 * 60 * 1000
+
+  if (target === today) {
+    return 'Hari Ini'
+  } else if (target === today - oneDay) {
+    return 'Kemarin'
+  } else {
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+  }
+}
+
 export const ChatMode: React.FC<ChatModeProps> = ({
   isMobile,
   onOpenSidebar,
@@ -593,17 +634,30 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             </div>
           )}
 
-          {messages.map((msg) => {
+          {messages.map((msg, index) => {
             const isUser = msg.role === 'user'
+            const msgTime = msg.createdAt || Date.now()
+            const prevMsg = index > 0 ? messages[index - 1] : null
+            const prevTime = prevMsg ? (prevMsg.createdAt || msgTime) : undefined
+            const showDateDivider = index === 0 || !isSameDay(msgTime, prevTime)
+            const formattedDateString = formatDateDivider(msgTime)
+
             return (
-              <div
-                key={msg.id}
-                style={{
-                  ...chatStyles.messageRow,
-                  justifyContent: isUser ? 'flex-end' : 'flex-start',
-                  gap: isMobile ? '8px' : '12px'
-                }}
-              >
+              <React.Fragment key={msg.id}>
+                {showDateDivider && (
+                  <div style={chatStyles.dateDividerContainer}>
+                    <div style={chatStyles.dateDividerLine} />
+                    <span style={chatStyles.dateDividerText}>{formattedDateString}</span>
+                    <div style={chatStyles.dateDividerLine} />
+                  </div>
+                )}
+                <div
+                  style={{
+                    ...chatStyles.messageRow,
+                    justifyContent: isUser ? 'flex-end' : 'flex-start',
+                    gap: isMobile ? '8px' : '12px'
+                  }}
+                >
                 {!isUser && (
                   <img
                     src={LOGO_URL}
@@ -677,8 +731,9 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   )}
                 </div>
               </div>
-            )
-          })}
+            </React.Fragment>
+          )
+        })}
 
           {/* Streaming Message Bubble (Khusus saat AI sedang mengetik/streaming respon) */}
           {streamingText.length > 0 && (
@@ -926,6 +981,27 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     gap: '18px'
+  },
+  dateDividerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '20px 0',
+    width: '100%',
+    userSelect: 'none'
+  },
+  dateDividerLine: {
+    flex: 1,
+    height: '1px',
+    backgroundColor: 'var(--border-color, #334155)'
+  },
+  dateDividerText: {
+    margin: '0 15px',
+    fontSize: '12px',
+    fontWeight: '500',
+    color: 'var(--text-secondary, #94a3b8)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
   },
   messageRow: {
     display: 'flex',
