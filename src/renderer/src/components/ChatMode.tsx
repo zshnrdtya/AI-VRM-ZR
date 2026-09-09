@@ -584,7 +584,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                         gap: '8px'
                       }}
                     >
-                      <IconComp size={14} color="#60a5fa" />
+                      <IconComp size={14} color="var(--accent-blue-text)" />
                       <span>{item.text}</span>
                     </button>
                   )
@@ -651,11 +651,11 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                         onClick={() => handleCopy(msg.id, msg.text)}
                         style={{
                           ...chatStyles.copyButton,
-                          color: copiedId === msg.id ? '#34d399' : 'rgba(255, 255, 255, 0.55)',
+                          color: copiedId === msg.id ? '#10b981' : 'var(--text-secondary)',
                           borderColor:
-                            copiedId === msg.id ? 'rgba(52, 211, 153, 0.4)' : 'rgba(255, 255, 255, 0.08)',
+                            copiedId === msg.id ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-color)',
                           backgroundColor:
-                            copiedId === msg.id ? 'rgba(52, 211, 153, 0.12)' : 'rgba(255, 255, 255, 0.04)'
+                            copiedId === msg.id ? 'rgba(16, 185, 129, 0.12)' : 'var(--bg-badge)'
                         }}
                         title={copiedId === msg.id ? 'Tersalin ke clipboard!' : 'Salin pesan'}
                         aria-label={copiedId === msg.id ? 'Tersalin' : 'Salin pesan'}
@@ -748,7 +748,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   gap: '6px'
                 }}
               >
-                <Sparkles size={13} color="#60a5fa" />
+                <Sparkles size={13} color="var(--accent-blue-text)" />
                 <span
                   style={{
                     ...chatStyles.typingText,
@@ -869,8 +869,8 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     gap: '8px'
   },
   hamburgerBtn: {
-    backgroundColor: 'var(--bg-badge)',
-    border: '1px solid var(--border-card)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
     color: 'var(--text-primary)',
     fontSize: '18px',
     width: '38px',
@@ -882,11 +882,12 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer',
     touchAction: 'manipulation',
     WebkitTapHighlightColor: 'transparent',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   newChatBtn: {
     backgroundColor: 'var(--accent-blue-subtle)',
-    border: '1px solid rgba(59, 130, 246, 0.4)',
+    border: '1px solid var(--accent-blue)',
     color: 'var(--accent-blue-text)',
     padding: '6px 12px',
     borderRadius: '8px',
@@ -896,18 +897,20 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     fontWeight: 600,
     display: 'flex',
     alignItems: 'center',
-    gap: '4px'
+    gap: '4px',
+    boxShadow: 'var(--card-shadow)'
   },
   clearBtn: {
-    backgroundColor: 'var(--bg-badge)',
-    border: '1px solid var(--border-color)',
-    color: 'var(--text-secondary)',
+    backgroundColor: 'var(--btn-secondary-bg)',
+    border: '1px solid var(--btn-secondary-border)',
+    color: 'var(--btn-secondary-text)',
     padding: '6px 12px',
     borderRadius: '8px',
     fontSize: '12px',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    fontWeight: 500
+    fontWeight: 500,
+    boxShadow: 'var(--card-shadow)'
   },
   chatArea: {
     flex: 1,
@@ -938,13 +941,13 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
     flexShrink: 0,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+    boxShadow: 'var(--card-shadow)'
   },
   bubble: {
     padding: '12px 18px',
     borderRadius: '16px',
     lineHeight: '1.6',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+    boxShadow: 'var(--card-shadow)',
     userSelect: 'text',
     WebkitUserSelect: 'text'
   },
@@ -954,11 +957,12 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     borderBottomRightRadius: '4px'
   },
   assistantBubble: {
-    backgroundColor: 'var(--bg-bubble-ai)',
-    border: '1px solid var(--border-card)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
     color: 'var(--text-primary)',
     backdropFilter: 'blur(12px)',
-    borderBottomLeftRadius: '4px'
+    borderBottomLeftRadius: '4px',
+    boxShadow: 'var(--card-shadow)'
   },
   messageText: {
     margin: 0,
@@ -982,7 +986,7 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   timestamp: {
     display: 'block',
     fontSize: '10px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     marginTop: '6px',
     textAlign: 'right',
     userSelect: 'none'
@@ -1026,14 +1030,14 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   inputCard: {
     maxWidth: '850px',
     margin: '0 auto',
-    backgroundColor: 'var(--bg-input)',
-    border: '1px solid var(--border-card)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
     borderRadius: '14px',
     display: 'flex',
     alignItems: 'center',
     padding: '8px 12px',
     gap: '10px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+    boxShadow: 'var(--card-shadow)',
     transition: 'all 0.25s ease'
   },
   textarea: {
@@ -1074,12 +1078,12 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     height: '64px',
     borderRadius: '18px',
     backgroundColor: 'var(--accent-blue-subtle)',
-    border: '1px solid rgba(59, 130, 246, 0.3)',
+    border: '1px solid var(--border-color)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: '14px',
-    boxShadow: '0 4px 20px rgba(37, 99, 235, 0.2)'
+    boxShadow: 'var(--card-shadow)'
   },
   emptyLogo: {
     width: '42px',
@@ -1105,14 +1109,15 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     width: '100%'
   },
   suggestionChip: {
-    backgroundColor: 'var(--bg-guide-item)',
+    backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
-    color: 'var(--text-lead)',
+    color: 'var(--text-primary)',
     padding: '10px 14px',
     borderRadius: '10px',
     fontSize: '13px',
     textAlign: 'left',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   }
 }
