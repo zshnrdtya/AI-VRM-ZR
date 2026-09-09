@@ -10,6 +10,27 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+
+/* Custom Scrollbar untuk seluruh aplikasi */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Membuat track transparan agar menyatu dengan background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155; /* Warna abu-abu gelap kebiruan yang elegan */
+  border-radius: 10px; /* Membuat ujung scrollbar membulat */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569; /* Sedikit lebih terang saat di-hover */
 }
 
 html, body {
