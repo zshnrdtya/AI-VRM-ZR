@@ -446,15 +446,16 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             flex: 1
           }}
         >
-          <button
-            onClick={onOpenSidebar}
-            className="hamburger-btn"
-            style={{ ...chatStyles.hamburgerBtn, flexShrink: 0 }}
-            title="Buka Menu"
-            aria-label="Buka Menu"
-          >
-            <Menu size={20} />
-          </button>
+          {isMobile && (
+            <button
+              onClick={onOpenSidebar}
+              style={{ ...chatStyles.hamburgerBtn, flexShrink: 0 }}
+              title="Buka Menu"
+              aria-label="Buka Menu"
+            >
+              <Menu size={20} />
+            </button>
+          )}
           <div style={{ minWidth: 0, overflow: 'hidden' }}>
             <h1
               style={{

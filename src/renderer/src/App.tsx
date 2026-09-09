@@ -539,10 +539,9 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
   return (
     <div style={styles.appRoot}>
       {/* Mobile Backdrop Overlay */}
-      {isSidebarOpen && (
+      {isMobile && isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="mobile-only"
           style={styles.mobileBackdrop}
         />
       )}
@@ -587,15 +586,16 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               <span style={styles.sidebarBrandSubtitle}>Virtual 3D Assistant</span>
             </div>
           </div>
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="mobile-only"
-            style={styles.sidebarCloseBtn}
-            title="Tutup Menu"
-            aria-label="Tutup Menu"
-          >
-            <X size={18} />
-          </button>
+          {isMobile && (
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              style={styles.sidebarCloseBtn}
+              title="Tutup Menu"
+              aria-label="Tutup Menu"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
         {/* Navigation Menu */}
@@ -748,22 +748,23 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
           }}>
             <div style={styles.headerLeft}>
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className="hamburger-btn"
-                style={styles.hamburgerBtn}
-                title="Buka Menu"
-                aria-label="Buka Menu"
-              >
-                <Menu size={20} />
-              </button>
+              {isMobile && (
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  style={styles.hamburgerBtn}
+                  title="Buka Menu"
+                  aria-label="Buka Menu"
+                >
+                  <Menu size={20} />
+                </button>
+              )}
               <h1 style={{
                 ...styles.brandTitle,
                 fontSize: isMobile ? '15px' : '17px'
               }}>
                 Zeera AI Avatar
               </h1>
-              {!isMobile && <span style={styles.headerBadge} className="desktop-only">Interactive 3D</span>}
+              {!isMobile && <span style={styles.headerBadge}>Interactive 3D</span>}
             </div>
 
             <div style={styles.headerRight}>
@@ -1059,15 +1060,16 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             minHeight: isMobile ? 'calc(56px + env(safe-area-inset-top, 0px))' : '64px'
           }}>
             <div style={styles.headerLeft}>
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className="hamburger-btn"
-                style={styles.hamburgerBtn}
-                title="Buka Menu"
-                aria-label="Buka Menu"
-              >
-                <Menu size={20} />
-              </button>
+              {isMobile && (
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  style={styles.hamburgerBtn}
+                  title="Buka Menu"
+                  aria-label="Buka Menu"
+                >
+                  <Menu size={20} />
+                </button>
+              )}
               <h1 style={{
                 ...styles.brandTitle,
                 fontSize: isMobile ? '15px' : '17px'
