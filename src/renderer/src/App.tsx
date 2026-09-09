@@ -638,7 +638,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               ...(activeTab === 'chat' ? styles.navItemActive : {})
             }}
           >
-            <span style={{ ...styles.navIcon, color: activeTab === 'chat' ? '#60a5fa' : '#94a3b8' }}>
+            <span style={{ ...styles.navIcon, color: activeTab === 'chat' ? 'var(--accent-blue-text)' : 'var(--text-secondary)' }}>
               <MessageSquare size={19} />
             </span>
             <div style={styles.navTextWrapper}>
@@ -655,7 +655,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               ...(activeTab === 'assistant' ? styles.navItemActive : {})
             }}
           >
-            <span style={{ ...styles.navIcon, color: activeTab === 'assistant' ? '#60a5fa' : '#94a3b8' }}>
+            <span style={{ ...styles.navIcon, color: activeTab === 'assistant' ? 'var(--accent-blue-text)' : 'var(--text-secondary)' }}>
               <Bot size={19} />
             </span>
             <div style={styles.navTextWrapper}>
@@ -672,7 +672,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               ...(activeTab === 'about' ? styles.navItemActive : {})
             }}
           >
-            <span style={{ ...styles.navIcon, color: activeTab === 'about' ? '#60a5fa' : '#94a3b8' }}>
+            <span style={{ ...styles.navIcon, color: activeTab === 'about' ? 'var(--accent-blue-text)' : 'var(--text-secondary)' }}>
               <BookOpen size={19} />
             </span>
             <div style={styles.navTextWrapper}>
@@ -718,7 +718,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                       }}
                       title={sess.title}
                     >
-                      <span style={{ ...styles.historyItemIcon, color: isActive ? '#60a5fa' : '#64748b', display: 'flex' }}>
+                      <span style={{ ...styles.historyItemIcon, color: isActive ? 'var(--accent-blue-text)' : 'var(--text-secondary)', display: 'flex' }}>
                         <MessageSquare size={13} />
                       </span>
                       <span style={styles.historyItemText}>{sess.title}</span>
@@ -1011,12 +1011,12 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   ...styles.micButton,
                   width: isMobile ? '38px' : '40px',
                   height: isMobile ? '38px' : '40px',
-                  backgroundColor: isListening ? '#ef4444' : '#1e293b',
-                  boxShadow: isListening ? '0 0 16px rgba(239, 68, 68, 0.6)' : 'none'
+                  backgroundColor: isListening ? '#ef4444' : 'var(--bg-badge)',
+                  boxShadow: isListening ? '0 0 16px rgba(239, 68, 68, 0.6)' : 'var(--card-shadow)'
                 }}
                 title={isListening ? 'Hentikan rekaman suara' : 'Mulai bicara dengan suara'}
               >
-                {isListening ? <Square size={16} fill="white" /> : <Mic size={18} color="#94a3b8" />}
+                {isListening ? <Square size={16} fill="white" /> : <Mic size={18} color="var(--text-primary)" />}
               </button>
 
               <input
@@ -1236,11 +1236,12 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                     ...styles.guideItem,
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px',
-                    borderColor: 'rgba(59, 130, 246, 0.35)',
-                    backgroundColor: 'var(--bg-guide-item)'
+                    borderColor: 'rgba(59, 130, 246, 0.4)',
+                    backgroundColor: 'var(--bg-card)',
+                    boxShadow: 'var(--card-shadow)'
                   }}>
                     <div style={{ ...styles.guideIcon, backgroundColor: 'var(--accent-blue-subtle)' }}>
-                      <MessageSquare size={22} color="#38bdf8" />
+                      <MessageSquare size={22} color="var(--accent-blue-text)" />
                     </div>
                     <div style={styles.guideContent}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
@@ -1248,8 +1249,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                         <span style={{
                           fontSize: '10px',
                           fontWeight: 700,
-                          color: '#38bdf8',
-                          backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                          color: 'var(--accent-blue-text)',
+                          backgroundColor: 'var(--accent-blue-subtle)',
                           padding: '2px 6px',
                           borderRadius: '4px'
                         }}>FITUR TERBARU</span>
@@ -1451,7 +1452,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 500
   },
   sidebarCloseBtn: {
-    backgroundColor: 'var(--bg-badge)',
+    backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
     color: 'var(--text-secondary)',
     fontSize: '16px',
@@ -1463,10 +1464,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     cursor: 'pointer',
     touchAction: 'manipulation',
-    WebkitTapHighlightColor: 'transparent'
+    WebkitTapHighlightColor: 'transparent',
+    boxShadow: 'var(--card-shadow)'
   },
   themeToggleBtn: {
-    backgroundColor: 'var(--bg-badge)',
+    backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
     color: 'var(--text-primary)',
     width: '36px',
@@ -1478,7 +1480,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer',
     touchAction: 'manipulation',
     WebkitTapHighlightColor: 'transparent',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   themeToggleCard: {
     display: 'flex',
@@ -1494,7 +1497,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     touchAction: 'manipulation',
-    WebkitTapHighlightColor: 'transparent'
+    WebkitTapHighlightColor: 'transparent',
+    boxShadow: 'var(--card-shadow)'
   },
   themeToggleText: {
     fontSize: '12px',
@@ -1535,7 +1539,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: 'var(--bg-nav-item-active)',
     borderColor: 'rgba(59, 130, 246, 0.4)',
     color: 'var(--text-primary)',
-    boxShadow: '0 4px 16px rgba(37, 99, 235, 0.15)'
+    boxShadow: 'var(--card-shadow)'
   },
   navIcon: {
     fontSize: '20px',
@@ -1555,7 +1559,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   navDesc: {
     fontSize: '11px',
-    color: 'var(--text-muted)'
+    color: 'var(--text-secondary)'
   },
 
   // RIWAYAT CHAT SIDEBAR STYLES
@@ -1577,19 +1581,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '11px',
     fontWeight: 700,
     letterSpacing: '0.6px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     textTransform: 'uppercase'
   },
   newChatMiniBtn: {
     backgroundColor: 'var(--accent-blue-subtle)',
-    border: '1px solid rgba(59, 130, 246, 0.35)',
+    border: '1px solid var(--border-color)',
     color: 'var(--accent-blue-text)',
     borderRadius: '6px',
     padding: '2px 8px',
     fontSize: '11px',
     fontWeight: 600,
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   historyList: {
     flex: 1,
@@ -1614,7 +1619,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   historyItemActive: {
     backgroundColor: 'var(--bg-nav-item-active)',
-    borderColor: 'rgba(59, 130, 246, 0.35)',
+    borderColor: 'var(--border-color)',
     color: 'var(--text-primary)'
   },
   historyItemIcon: {
@@ -1632,12 +1637,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   historyDeleteBtn: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     fontSize: '11px',
     cursor: 'pointer',
     padding: '2px 4px',
     borderRadius: '4px',
-    opacity: 0.6,
+    opacity: 0.7,
     transition: 'opacity 0.2s ease',
     display: 'flex',
     alignItems: 'center',
@@ -1645,7 +1650,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   historyEmpty: {
     fontSize: '11.5px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     textAlign: 'center',
     padding: '16px 0',
     fontStyle: 'italic'
@@ -1660,7 +1665,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: '1px solid var(--border-color)',
     borderRadius: '12px',
     padding: '12px 14px',
-    transition: 'all 0.25s ease'
+    transition: 'all 0.25s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   creatorHeader: {
     marginBottom: '4px'
@@ -1734,8 +1740,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     minWidth: 0
   },
   hamburgerBtn: {
-    backgroundColor: 'var(--bg-badge)',
-    border: '1px solid var(--border-card)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
     color: 'var(--text-primary)',
     fontSize: '18px',
     width: '38px',
@@ -1748,7 +1754,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexShrink: 0,
     touchAction: 'manipulation',
     WebkitTapHighlightColor: 'transparent',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   brandTitle: {
     margin: 0,
@@ -1759,11 +1766,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   headerBadge: {
     fontSize: '11px',
     backgroundColor: 'var(--accent-blue-subtle)',
-    border: '1px solid rgba(59, 130, 246, 0.35)',
+    border: '1px solid var(--border-color)',
     color: 'var(--accent-blue-text)',
     padding: '3px 8px',
     borderRadius: '6px',
-    fontWeight: 600
+    fontWeight: 600,
+    boxShadow: 'var(--card-shadow)'
   },
   headerRight: {
     display: 'flex',
@@ -1774,9 +1782,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    backgroundColor: 'var(--bg-badge)',
+    backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
-    borderRadius: '20px'
+    borderRadius: '20px',
+    boxShadow: 'var(--card-shadow)'
   },
   statusDot: {
     width: '7px',
@@ -1786,16 +1795,17 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   statusText: {
     fontWeight: 500,
-    color: 'var(--text-lead)'
+    color: 'var(--text-secondary)'
   },
   headerPortoBtn: {
     backgroundColor: 'var(--accent-blue-subtle)',
-    border: '1px solid rgba(37, 99, 235, 0.4)',
+    border: '1px solid var(--border-color)',
     color: 'var(--accent-blue-text)',
     borderRadius: '8px',
     textDecoration: 'none',
     fontWeight: 600,
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   },
 
   // 3D MAIN STAGE
@@ -1844,13 +1854,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
   },
   rightAiBubble: {
-    backgroundColor: 'var(--bg-bubble-ai)',
+    backgroundColor: 'var(--bg-card)',
     backdropFilter: 'blur(16px)',
-    border: '1px solid var(--border-card)',
+    border: '1px solid var(--border-color)',
     color: 'var(--text-primary)',
     padding: '14px 20px',
     borderRadius: '16px 16px 16px 4px',
-    boxShadow: '0 10px 32px rgba(0, 0, 0, 0.25)',
+    boxShadow: 'var(--card-shadow)',
     pointerEvents: 'auto',
     wordBreak: 'break-word',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -1880,7 +1890,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   aiBubbleTime: {
     fontSize: '10.5px',
-    color: 'var(--text-muted)'
+    color: 'var(--text-secondary)'
   },
   bubbleText: {
     margin: 0,
@@ -1913,7 +1923,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: 'background-color 0.25s ease, border-color 0.25s ease'
   },
   statusHint: {
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     fontWeight: 500,
     textAlign: 'center'
   },
@@ -1923,9 +1933,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: 'var(--bg-input)',
-    border: '1px solid var(--border-card)',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
+    boxShadow: 'var(--card-shadow)',
     transition: 'all 0.25s ease'
   },
   textInput: {
@@ -1946,7 +1956,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     cursor: 'pointer',
     flexShrink: 0,
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   sendButton: {
     backgroundColor: 'var(--accent-blue)',
@@ -1975,7 +1986,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     backdropFilter: 'blur(16px)',
     border: '1px solid var(--border-color)',
     borderRadius: '16px',
-    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+    boxShadow: 'var(--card-shadow)',
     transition: 'all 0.25s ease'
   },
   aboutCardBadge: {
@@ -1985,6 +1996,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     letterSpacing: '0.8px',
     color: 'var(--accent-blue-text)',
     backgroundColor: 'var(--accent-blue-subtle)',
+    border: '1px solid var(--border-color)',
     padding: '3px 8px',
     borderRadius: '6px',
     marginBottom: '8px'
@@ -2000,10 +2012,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '0 0 16px 0'
   },
   aboutPortoBox: {
-    backgroundColor: 'var(--bg-card-solid)',
+    backgroundColor: 'var(--bg-main)',
     border: '1px solid var(--border-color)',
     borderRadius: '12px',
-    padding: '14px 18px'
+    padding: '14px 18px',
+    boxShadow: 'var(--card-shadow)'
   },
   bigPortoButton: {
     display: 'inline-flex',
@@ -2027,15 +2040,17 @@ const styles: { [key: string]: React.CSSProperties } = {
   guideItem: {
     display: 'flex',
     alignItems: 'flex-start',
-    backgroundColor: 'var(--bg-guide-item)',
+    backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
     borderRadius: '12px',
     padding: '14px 16px',
-    transition: 'all 0.25s ease'
+    transition: 'all 0.25s ease',
+    boxShadow: 'var(--card-shadow)'
   },
   guideIcon: {
     fontSize: '22px',
     backgroundColor: 'var(--accent-blue-subtle)',
+    border: '1px solid var(--border-color)',
     width: '40px',
     height: '40px',
     borderRadius: '10px',
@@ -2082,7 +2097,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     pointerEvents: 'auto'
   },
   watermarkLink: {
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     textDecoration: 'none',
     letterSpacing: '0.3px',
     transition: 'color 0.2s ease',
