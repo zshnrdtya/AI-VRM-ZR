@@ -12,14 +12,16 @@ interface AvatarCanvasProps {
   gesture: string
   animationState: 'idle' | 'talking'
   onControllersReady: (controllers: { lipSync: LipSyncController }) => void
+  theme?: 'dark' | 'light'
 }
 
 export function AvatarCanvas({ 
   modelUrl, 
-  emotion,
+  emotion, 
   gesture, 
   animationState, 
-  onControllersReady 
+  onControllersReady,
+  theme = 'dark'
 }: AvatarCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [loadingProgress, setLoadingProgress] = useState(0)
@@ -45,6 +47,7 @@ export function AvatarCanvas({
       initialWidth, 
       initialHeight
     )
+    scene.setTheme(theme)
     sceneRef.current = scene
     
     // Handle resize
@@ -128,9 +131,26 @@ export function AvatarCanvas({
       animCtrlRef.current.playGesture(gesture)
     }
   }, [gesture])
+
+  // Reaktif terhadap perubahan tema terang/gelap
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current.setTheme(theme)
+    }
+  }, [theme])
   
   return (
-    <div className="avatar-container" style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+    <div 
+      className="avatar-container" 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        position: 'relative', 
+        overflow: 'hidden',
+        backgroundColor: theme === 'light' ? '#c2cbd6' : 'transparent',
+        transition: 'background-color 0.3s ease'
+      }}
+    >
       <canvas 
         ref={canvasRef} 
         className="avatar-canvas" 
