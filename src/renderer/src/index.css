@@ -1,9 +1,59 @@
 :root {
-  --navy-bg: #070b15;
-  --navy-card: #10182b;
+  /* Dark Mode (Default) Palette */
+  --bg-main: #070b15;
+  --bg-gradient: radial-gradient(ellipse at top, #0f1c3f 0%, #070b15 70%);
+  --bg-sidebar: #0a1024;
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --bg-card-solid: #10182b;
+  --bg-header: rgba(10, 16, 32, 0.88);
+  --bg-footer: rgba(8, 14, 28, 0.94);
+  --bg-nav-item: transparent;
+  --bg-nav-item-active: rgba(37, 99, 235, 0.16);
+  --bg-input: #10182b;
+  --bg-bubble-ai: rgba(15, 23, 42, 0.85);
+  --bg-guide-item: rgba(10, 16, 32, 0.6);
+  --bg-badge: rgba(30, 41, 59, 0.8);
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-lead: #cbd5e1;
+  --text-badge: #93c5fd;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.1);
   --accent-blue: #2563eb;
-  --text-main: #ffffff;
+  --accent-blue-text: #60a5fa;
+  --accent-blue-subtle: rgba(37, 99, 235, 0.18);
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
+}
+
+.light-theme {
+  /* Light Mode Palette */
+  --bg-main: #f8fafc;
+  --bg-gradient: radial-gradient(ellipse at top, #e2e8f0 0%, #f8fafc 70%);
+  --bg-sidebar: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-card-solid: #ffffff;
+  --bg-header: rgba(255, 255, 255, 0.92);
+  --bg-footer: rgba(255, 255, 255, 0.95);
+  --bg-nav-item: transparent;
+  --bg-nav-item-active: rgba(37, 99, 235, 0.12);
+  --bg-input: #ffffff;
+  --bg-bubble-ai: #ffffff;
+  --bg-guide-item: rgba(241, 245, 249, 0.85);
+  --bg-badge: rgba(226, 232, 240, 0.8);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
   --text-muted: #94a3b8;
+  --text-lead: #334155;
+  --text-badge: #1d4ed8;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-card: rgba(0, 0, 0, 0.12);
+  --accent-blue: #2563eb;
+  --accent-blue-text: #2563eb;
+  --accent-blue-subtle: rgba(37, 99, 235, 0.1);
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
 }
 
 * {
@@ -11,7 +61,7 @@
   margin: 0;
   padding: 0;
   scrollbar-width: thin;
-  scrollbar-color: #334155 transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 /* Custom Scrollbar untuk seluruh aplikasi */
@@ -21,16 +71,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* Membuat track transparan agar menyatu dengan background */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155; /* Warna abu-abu gelap kebiruan yang elegan */
-  border-radius: 10px; /* Membuat ujung scrollbar membulat */
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569; /* Sedikit lebih terang saat di-hover */
+  background: var(--scrollbar-thumb-hover);
 }
 
 html, body {
@@ -42,14 +92,15 @@ html, body {
   height: 100dvh;
   margin: 0;
   padding: 0;
-  background-color: var(--navy-bg);
-  color: var(--text-main);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   overflow: hidden;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
   -webkit-text-size-adjust: 100%;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 button {
