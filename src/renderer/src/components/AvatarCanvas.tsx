@@ -47,7 +47,6 @@ export function AvatarCanvas({
       initialWidth, 
       initialHeight
     )
-    scene.setTheme(theme)
     sceneRef.current = scene
     
     // Handle resize
@@ -132,13 +131,6 @@ export function AvatarCanvas({
     }
   }, [gesture])
 
-  // Reaktif terhadap perubahan tema terang/gelap
-  useEffect(() => {
-    if (sceneRef.current) {
-      sceneRef.current.setTheme(theme)
-    }
-  }, [theme])
-  
   return (
     <div 
       className="avatar-container" 
@@ -147,7 +139,7 @@ export function AvatarCanvas({
         height: '100%', 
         position: 'relative', 
         overflow: 'hidden',
-        backgroundColor: theme === 'light' ? '#c2cbd6' : 'transparent',
+        backgroundColor: theme === 'light' ? '#e2e8f0' : 'transparent',
         transition: 'background-color 0.3s ease'
       }}
     >
