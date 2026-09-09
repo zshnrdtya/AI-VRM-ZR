@@ -29,7 +29,9 @@ import {
   Smartphone,
   Lightbulb,
   Rocket,
-  Send
+  Send,
+  Sun,
+  Moon
 } from 'lucide-react'
 
 type NavTab = 'assistant' | 'chat' | 'about'
@@ -47,6 +49,24 @@ export default function App() {
 
   const [isMobile, setIsMobile] = useState(checkIsMobile)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  // Sistem Tema Dinamis (Dark Mode & Light Mode) dengan persistensi LocalStorage
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('zeera_theme')
+      if (saved === 'light' || saved === 'dark') return saved
+    }
+    return 'dark'
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('zeera_theme', theme)
+      document.body.classList.toggle('light-theme', theme === 'light')
+    } catch (e) {
+      console.warn('[Zeera Theme] Error saving theme:', e)
+    }
+  }, [theme])
 
   // Ambil seluruh daftar sesi dari IndexedDB secara reaktif
   const sessions: SessionItem[] = useLiveQuery(
@@ -577,7 +597,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               })
         }}
       >
-        {/* Brand Header with Close Button on Mobile */}
+        {/* Brand Header with Theme Toggle & Close Button on Mobile */}
         <div style={styles.sidebarHeader}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={LOGO_URL} alt="Zeera Logo" style={styles.sidebarLogo} />
@@ -586,16 +606,26 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               <span style={styles.sidebarBrandSubtitle}>Virtual 3D Assistant</span>
             </div>
           </div>
-          {isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <button
-              onClick={() => setIsSidebarOpen(false)}
-              style={styles.sidebarCloseBtn}
-              title="Tutup Menu"
-              aria-label="Tutup Menu"
+              onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+              style={styles.themeToggleBtn}
+              title={theme === 'dark' ? 'Beralih ke Mode Terang (Light Mode)' : 'Beralih ke Mode Gelap (Dark Mode)'}
+              aria-label={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
             >
-              <X size={18} />
+              {theme === 'dark' ? <Sun size={17} color="#fbbf24" /> : <Moon size={17} color="#6366f1" />}
             </button>
-          )}
+            {isMobile && (
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                style={styles.sidebarCloseBtn}
+                title="Tutup Menu"
+                aria-label="Tutup Menu"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Navigation Menu */}
@@ -706,8 +736,25 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
           </div>
         </div>
 
-        {/* Sidebar Footer: Creator & Portfolio */}
+        {/* Sidebar Footer: Theme Toggle & Creator Portfolio */}
         <div style={styles.sidebarFooter}>
+          <button
+            onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+            style={styles.themeToggleCard}
+            title={theme === 'dark' ? 'Beralih ke Mode Terang (Light Mode)' : 'Beralih ke Mode Gelap (Dark Mode)'}
+            aria-label={theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {theme === 'dark' ? <Sun size={15} color="#fbbf24" /> : <Moon size={15} color="#6366f1" />}
+              <span style={styles.themeToggleText}>
+                {theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
+              </span>
+            </span>
+            <span style={styles.themeBadge}>
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </span>
+          </button>
+
           <div style={styles.creatorCard}>
             <div style={styles.creatorHeader}>
               <span style={styles.creatorTag}>DEVELOPER</span>
@@ -856,7 +903,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                           height: 0,
                           borderTop: '7px solid transparent',
                           borderBottom: '7px solid transparent',
-                          borderLeft: '8px solid #2563eb'
+                          borderLeft: '8px solid var(--accent-blue)'
                         }}
                       />
                     )}
@@ -888,7 +935,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                       <span style={styles.aiBubbleAuthor}>Zeera</span>
                       <span style={styles.aiBubbleTime}>{currentAiMsg.timestamp}</span>
                     </div>
-                    <p style={{ ...styles.bubbleText, color: '#e2e8f0' }}>{currentAiMsg.text}</p>
+                    <p style={{ ...styles.bubbleText, color: 'var(--text-primary)' }}>{currentAiMsg.text}</p>
                   </div>
                 )}
               </div>
@@ -1121,11 +1168,11 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   fontSize: isMobile ? '13.5px' : '15px'
                 }}>
                   Proyek <strong>AI VTuber Zeera</strong> ini dirancang dan dikembangkan secara mandiri oleh{' '}
-                  <strong style={{ color: '#60a5fa' }}>Raditya Rai Zeeshan</strong> sebagai platform asisten virtual
+                  <strong style={{ color: 'var(--accent-blue-text)' }}>Raditya Rai Zeeshan</strong> sebagai platform asisten virtual
                   berbasis web yang menggabungkan model karakter 3D anime interaktif, kecerdasan buatan, dan sintesis suara natural.
                 </p>
                 <div style={styles.aboutPortoBox}>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#94a3b8' }}>
+                  <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
                     Kunjungi portofolio resmi saya:
                   </p>
                   <a
@@ -1176,7 +1223,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                       <p style={styles.guideText}>
                         Rasakan pengalaman interaksi virtual yang hidup bersama avatar 3D anime interaktif berbasis model <strong>Pixiv VRM</strong>. Avatar dilengkapi dengan simulasi bernafas alami (<em>idle</em>), kedipan mata otomatis (<em>blink</em>), ekspresi wajah responsif (senang, terkejut, rileks), serta gestur dinamis.
                       </p>
-                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.6' }}>
+                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: 'var(--text-lead)', lineHeight: '1.6' }}>
                         <li><strong>Percakapan Suara Real-Time:</strong> Tekan tombol <strong>Mikrofon</strong> di bar kontrol bawah untuk berbicara langsung dalam bahasa Indonesia.</li>
                         <li><strong>Sintesis Suara & Lip-Sync:</strong> Zeera merespon dengan suara natural <em>Microsoft Edge Neural TTS (id-ID-GadisNeural)</em> yang dipadukan dengan sinkronisasi gerakan bibir (<em>Lip-Sync</em>) presisi via Web Audio API.</li>
                         <li><strong>Input Teks Cepat:</strong> Anda juga dapat mengetik pesan singkat di kotak input bawah dan menekan Enter.</li>
@@ -1190,9 +1237,9 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px',
                     borderColor: 'rgba(59, 130, 246, 0.35)',
-                    backgroundColor: 'rgba(15, 23, 42, 0.8)'
+                    backgroundColor: 'var(--bg-guide-item)'
                   }}>
-                    <div style={{ ...styles.guideIcon, backgroundColor: 'rgba(37, 99, 235, 0.25)' }}>
+                    <div style={{ ...styles.guideIcon, backgroundColor: 'var(--accent-blue-subtle)' }}>
                       <MessageSquare size={22} color="#38bdf8" />
                     </div>
                     <div style={styles.guideContent}>
@@ -1208,9 +1255,9 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                         }}>FITUR TERBARU</span>
                       </div>
                       <p style={styles.guideText}>
-                        Ruang obrolan teks modern bertema <em>Dark Navy</em> ala ChatGPT yang ditenagai oleh <strong>Google Gemini AI (gemini-3.1-flash-lite)</strong>. Mode ini beroperasi dalam format teks murni tanpa suara (<em>silent mode</em>), ideal untuk kebutuhan belajar, coding, diskusi panjang, atau saat berada di ruang publik.
+                        Ruang obrolan teks modern bertema ala ChatGPT yang ditenagai oleh <strong>Google Gemini AI (gemini-3.1-flash-lite)</strong>. Mode ini beroperasi dalam format teks murni tanpa suara (<em>silent mode</em>), ideal untuk kebutuhan belajar, coding, diskusi panjang, atau saat berada di ruang publik.
                       </p>
-                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: '#cbd5e1', lineHeight: '1.65' }}>
+                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: 'var(--text-lead)', lineHeight: '1.65' }}>
                         <li><strong>Penyimpanan Persisten (IndexedDB):</strong> Riwayat percakapan Anda otomatis tersimpan di memori browser secara <em>local-first</em> menggunakan database Dexie. Riwayat tidak akan hilang meskipun Anda merefresh browser, serta menjamin privasi penuh tanpa perlu server database terpisah.</li>
                         <li><strong>Daftar Riwayat di Sidebar:</strong> Semua percakapan yang pernah Anda lakukan tercatat rapi di panel samping kiri dan dapat diakses kembali kapan saja.</li>
                         <li><strong>Fitur Auto-Title Otomatis:</strong> Saat Anda memulai obrolan baru, sistem secara cerdas menamai judul percakapan dari kalimat pembuka Anda.</li>
@@ -1331,7 +1378,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
   )
 }
 
-// Styling Pure Dark Navy / Responsive Look
+// Styling adaptif berbasis CSS Variables (Dark & Light Mode)
 const styles: { [key: string]: React.CSSProperties } = {
   appRoot: {
     display: 'flex',
@@ -1343,12 +1390,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     bottom: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: '#070b15',
-    color: '#ffffff',
+    backgroundColor: 'var(--bg-main)',
+    color: 'var(--text-primary)',
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     overflow: 'hidden',
     userSelect: 'none',
-    touchAction: 'manipulation'
+    touchAction: 'manipulation',
+    transition: 'background-color 0.25s ease, color 0.25s ease'
   },
 
   // MOBILE BACKDROP
@@ -1368,43 +1416,44 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '260px',
     minWidth: '260px',
     height: '100%',
-    backgroundColor: '#0a1024',
-    borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'var(--bg-sidebar)',
+    borderRight: '1px solid var(--border-color)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    zIndex: 30
+    zIndex: 30,
+    transition: 'background-color 0.25s ease, border-color 0.25s ease'
   },
   sidebarHeader: {
     padding: '20px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
+    borderBottom: '1px solid var(--border-color)'
   },
   sidebarLogo: {
     width: '40px',
     height: '40px',
     borderRadius: '10px',
     objectFit: 'contain',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)'
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)'
   },
   sidebarBrandTitle: {
     margin: 0,
     fontSize: '17px',
     fontWeight: 700,
     letterSpacing: '0.4px',
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   sidebarBrandSubtitle: {
     fontSize: '11px',
-    color: '#818cf8',
+    color: 'var(--accent-blue-text)',
     fontWeight: 500
   },
   sidebarCloseBtn: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    border: 'none',
-    color: '#94a3b8',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-secondary)',
     fontSize: '16px',
     width: '36px',
     height: '36px',
@@ -1415,6 +1464,52 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer',
     touchAction: 'manipulation',
     WebkitTapHighlightColor: 'transparent'
+  },
+  themeToggleBtn: {
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-primary)',
+    width: '36px',
+    height: '36px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    touchAction: 'manipulation',
+    WebkitTapHighlightColor: 'transparent',
+    transition: 'all 0.2s ease'
+  },
+  themeToggleCard: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: '8px 12px',
+    marginBottom: '10px',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '10px',
+    color: 'var(--text-primary)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    touchAction: 'manipulation',
+    WebkitTapHighlightColor: 'transparent'
+  },
+  themeToggleText: {
+    fontSize: '12px',
+    fontWeight: 600,
+    color: 'var(--text-primary)'
+  },
+  themeBadge: {
+    fontSize: '10px',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    padding: '2px 6px',
+    borderRadius: '4px',
+    backgroundColor: 'var(--accent-blue-subtle)',
+    color: 'var(--accent-blue-text)'
   },
   navMenu: {
     padding: '16px 14px 8px 14px',
@@ -1428,19 +1523,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     gap: '14px',
     padding: '12px 14px',
-    backgroundColor: 'transparent',
+    backgroundColor: 'var(--bg-nav-item)',
     border: '1px solid transparent',
     borderRadius: '12px',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
     cursor: 'pointer',
     textAlign: 'left',
     transition: 'all 0.2s ease'
   },
   navItemActive: {
-    backgroundColor: 'rgba(37, 99, 235, 0.16)',
+    backgroundColor: 'var(--bg-nav-item-active)',
     borderColor: 'rgba(59, 130, 246, 0.4)',
-    color: '#ffffff',
-    boxShadow: '0 4px 16px rgba(37, 99, 235, 0.2)'
+    color: 'var(--text-primary)',
+    boxShadow: '0 4px 16px rgba(37, 99, 235, 0.15)'
   },
   navIcon: {
     fontSize: '20px',
@@ -1456,11 +1551,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   navTitle: {
     fontSize: '14px',
     fontWeight: 600,
-    color: '#f1f5f9'
+    color: 'var(--text-primary)'
   },
   navDesc: {
     fontSize: '11px',
-    color: '#64748b'
+    color: 'var(--text-muted)'
   },
 
   // RIWAYAT CHAT SIDEBAR STYLES
@@ -1470,7 +1565,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     flex: 1,
     minHeight: 0,
     padding: '8px 14px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+    borderTop: '1px solid var(--border-color)'
   },
   historyHeader: {
     display: 'flex',
@@ -1482,13 +1577,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '11px',
     fontWeight: 700,
     letterSpacing: '0.6px',
-    color: '#64748b',
+    color: 'var(--text-muted)',
     textTransform: 'uppercase'
   },
   newChatMiniBtn: {
-    backgroundColor: 'rgba(37, 99, 235, 0.18)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     border: '1px solid rgba(59, 130, 246, 0.35)',
-    color: '#60a5fa',
+    color: 'var(--accent-blue-text)',
     borderRadius: '6px',
     padding: '2px 8px',
     fontSize: '11px',
@@ -1512,15 +1607,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: '8px',
     backgroundColor: 'transparent',
     border: '1px solid transparent',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
     userSelect: 'none'
   },
   historyItemActive: {
-    backgroundColor: 'rgba(37, 99, 235, 0.18)',
+    backgroundColor: 'var(--bg-nav-item-active)',
     borderColor: 'rgba(59, 130, 246, 0.35)',
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   historyItemIcon: {
     fontSize: '13px',
@@ -1537,7 +1632,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   historyDeleteBtn: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: '#64748b',
+    color: 'var(--text-muted)',
     fontSize: '11px',
     cursor: 'pointer',
     padding: '2px 4px',
@@ -1550,7 +1645,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   historyEmpty: {
     fontSize: '11.5px',
-    color: '#475569',
+    color: 'var(--text-muted)',
     textAlign: 'center',
     padding: '16px 0',
     fontStyle: 'italic'
@@ -1558,13 +1653,14 @@ const styles: { [key: string]: React.CSSProperties } = {
 
   sidebarFooter: {
     padding: '16px 14px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+    borderTop: '1px solid var(--border-color)'
   },
   creatorCard: {
-    backgroundColor: 'rgba(15, 23, 42, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
     borderRadius: '12px',
-    padding: '12px 14px'
+    padding: '12px 14px',
+    transition: 'all 0.25s ease'
   },
   creatorHeader: {
     marginBottom: '4px'
@@ -1572,8 +1668,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   creatorTag: {
     fontSize: '9px',
     fontWeight: 700,
-    color: '#38bdf8',
-    backgroundColor: 'rgba(56, 189, 248, 0.12)',
+    color: 'var(--accent-blue-text)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     padding: '2px 6px',
     borderRadius: '4px',
     letterSpacing: '0.6px'
@@ -1582,18 +1678,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '4px 0 2px 0',
     fontSize: '13px',
     fontWeight: 700,
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   creatorRole: {
     margin: '0 0 10px 0',
     fontSize: '11px',
-    color: '#94a3b8'
+    color: 'var(--text-secondary)'
   },
   portfolioButton: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#1d4ed8',
+    backgroundColor: 'var(--accent-blue)',
     color: '#ffffff',
     padding: '7px 10px',
     borderRadius: '8px',
@@ -1609,8 +1705,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: '100%',
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: '#070b15',
-    backgroundImage: 'radial-gradient(ellipse at top, #0f1c3f 0%, #070b15 70%)'
+    backgroundColor: 'var(--bg-main)',
+    backgroundImage: 'var(--bg-gradient)',
+    transition: 'background-color 0.25s ease'
   },
   tabView: {
     width: '100%',
@@ -1624,10 +1721,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(10, 16, 32, 0.88)',
+    backgroundColor: 'var(--bg-header)',
     backdropFilter: 'blur(16px)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-    zIndex: 20
+    borderBottom: '1px solid var(--border-color)',
+    zIndex: 20,
+    transition: 'background-color 0.25s ease, border-color 0.25s ease'
   },
   headerLeft: {
     display: 'flex',
@@ -1636,9 +1734,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     minWidth: 0
   },
   hamburgerBtn: {
-    backgroundColor: 'rgba(30, 41, 59, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    color: '#ffffff',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-card)',
+    color: 'var(--text-primary)',
     fontSize: '18px',
     width: '38px',
     height: '38px',
@@ -1656,13 +1754,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: 0,
     fontWeight: 700,
     letterSpacing: '0.3px',
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   headerBadge: {
     fontSize: '11px',
-    backgroundColor: 'rgba(59, 130, 246, 0.18)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     border: '1px solid rgba(59, 130, 246, 0.35)',
-    color: '#60a5fa',
+    color: 'var(--accent-blue-text)',
     padding: '3px 8px',
     borderRadius: '6px',
     fontWeight: 600
@@ -1676,8 +1774,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    backgroundColor: 'rgba(19, 29, 56, 0.8)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-color)',
     borderRadius: '20px'
   },
   statusDot: {
@@ -1688,12 +1786,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   statusText: {
     fontWeight: 500,
-    color: '#cbd5e1'
+    color: 'var(--text-lead)'
   },
   headerPortoBtn: {
-    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     border: '1px solid rgba(37, 99, 235, 0.4)',
-    color: '#60a5fa',
+    color: 'var(--accent-blue-text)',
     borderRadius: '8px',
     textDecoration: 'none',
     fontWeight: 600,
@@ -1736,7 +1834,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     pointerEvents: 'none'
   },
   leftUserBubble: {
-    backgroundColor: '#2563eb',
+    backgroundColor: 'var(--accent-blue)',
     color: '#ffffff',
     padding: '12px 18px',
     borderRadius: '16px 16px 4px 16px',
@@ -1746,13 +1844,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
   },
   rightAiBubble: {
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'var(--bg-bubble-ai)',
     backdropFilter: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    color: '#f1f5f9',
+    border: '1px solid var(--border-card)',
+    color: 'var(--text-primary)',
     padding: '14px 20px',
     borderRadius: '16px 16px 16px 4px',
-    boxShadow: '0 10px 32px rgba(0, 0, 0, 0.45)',
+    boxShadow: '0 10px 32px rgba(0, 0, 0, 0.25)',
     pointerEvents: 'auto',
     wordBreak: 'break-word',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -1772,23 +1870,23 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   userBubbleTime: {
     fontSize: '10.5px',
-    color: 'rgba(255, 255, 255, 0.7)'
+    color: 'rgba(255, 255, 255, 0.75)'
   },
   aiBubbleAuthor: {
     fontSize: '11.5px',
     fontWeight: 600,
-    color: '#60a5fa',
+    color: 'var(--accent-blue-text)',
     letterSpacing: '0.2px'
   },
   aiBubbleTime: {
     fontSize: '10.5px',
-    color: 'rgba(148, 163, 184, 0.7)'
+    color: 'var(--text-muted)'
   },
   bubbleText: {
     margin: 0,
     fontSize: '13.5px',
     lineHeight: '1.55',
-    color: '#ffffff',
+    color: 'inherit',
     whiteSpace: 'pre-wrap'
   },
   errorBanner: {
@@ -1808,13 +1906,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: 'rgba(8, 14, 28, 0.94)',
+    backgroundColor: 'var(--bg-footer)',
     backdropFilter: 'blur(18px)',
-    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-    zIndex: 20
+    borderTop: '1px solid var(--border-color)',
+    zIndex: 20,
+    transition: 'background-color 0.25s ease, border-color 0.25s ease'
   },
   statusHint: {
-    color: '#64748b',
+    color: 'var(--text-muted)',
     fontWeight: 500,
     textAlign: 'center'
   },
@@ -1824,22 +1923,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#10182b',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)'
+    backgroundColor: 'var(--bg-input)',
+    border: '1px solid var(--border-card)',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+    transition: 'all 0.25s ease'
   },
   textInput: {
     flex: 1,
     backgroundColor: 'transparent',
     border: 'none',
     outline: 'none',
-    color: '#ffffff',
+    color: 'var(--text-primary)',
     minWidth: 0
   },
   micButton: {
     borderRadius: '10px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#ffffff',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-primary)',
     fontSize: '16px',
     display: 'flex',
     alignItems: 'center',
@@ -1849,7 +1949,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: 'all 0.2s ease'
   },
   sendButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: 'var(--accent-blue)',
     color: '#ffffff',
     border: 'none',
     borderRadius: '10px',
@@ -1871,19 +1971,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '20px'
   },
   aboutCard: {
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    backgroundColor: 'var(--bg-card)',
     backdropFilter: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid var(--border-color)',
     borderRadius: '16px',
-    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)'
+    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+    transition: 'all 0.25s ease'
   },
   aboutCardBadge: {
     display: 'inline-block',
     fontSize: '10px',
     fontWeight: 700,
     letterSpacing: '0.8px',
-    color: '#60a5fa',
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    color: 'var(--accent-blue-text)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     padding: '3px 8px',
     borderRadius: '6px',
     marginBottom: '8px'
@@ -1891,16 +1992,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   aboutCardTitle: {
     margin: '0 0 10px 0',
     fontWeight: 700,
-    color: '#ffffff'
+    color: 'var(--text-primary)'
   },
   aboutCardLead: {
     lineHeight: '1.6',
-    color: '#cbd5e1',
+    color: 'var(--text-lead)',
     margin: '0 0 16px 0'
   },
   aboutPortoBox: {
-    backgroundColor: 'rgba(10, 16, 32, 0.85)',
-    border: '1px solid rgba(59, 130, 246, 0.3)',
+    backgroundColor: 'var(--bg-card-solid)',
+    border: '1px solid var(--border-color)',
     borderRadius: '12px',
     padding: '14px 18px'
   },
@@ -1908,12 +2009,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#2563eb',
+    backgroundColor: 'var(--accent-blue)',
     color: '#ffffff',
     textDecoration: 'none',
     fontWeight: 600,
     borderRadius: '10px',
-    boxShadow: '0 4px 16px rgba(37, 99, 235, 0.4)',
+    boxShadow: '0 4px 16px rgba(37, 99, 235, 0.3)',
     transition: 'all 0.2s ease',
     boxSizing: 'border-box'
   },
@@ -1926,14 +2027,15 @@ const styles: { [key: string]: React.CSSProperties } = {
   guideItem: {
     display: 'flex',
     alignItems: 'flex-start',
-    backgroundColor: 'rgba(10, 16, 32, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'var(--bg-guide-item)',
+    border: '1px solid var(--border-color)',
     borderRadius: '12px',
-    padding: '14px 16px'
+    padding: '14px 16px',
+    transition: 'all 0.25s ease'
   },
   guideIcon: {
     fontSize: '22px',
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    backgroundColor: 'var(--accent-blue-subtle)',
     width: '40px',
     height: '40px',
     borderRadius: '10px',
@@ -1949,13 +2051,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '0 0 4px 0',
     fontSize: '14.5px',
     fontWeight: 600,
-    color: '#f8fafc'
+    color: 'var(--text-primary)'
   },
   guideText: {
     margin: 0,
     fontSize: '13px',
     lineHeight: '1.55',
-    color: '#94a3b8'
+    color: 'var(--text-secondary)'
   },
   techBadgeContainer: {
     display: 'flex',
@@ -1964,9 +2066,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginTop: '10px'
   },
   techBadge: {
-    backgroundColor: 'rgba(30, 41, 59, 0.8)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    color: '#93c5fd',
+    backgroundColor: 'var(--bg-badge)',
+    border: '1px solid var(--border-color)',
+    color: 'var(--text-badge)',
     fontSize: '12px',
     fontWeight: 500,
     padding: '5px 10px',
@@ -1980,7 +2082,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     pointerEvents: 'auto'
   },
   watermarkLink: {
-    color: 'rgba(148, 163, 184, 0.45)',
+    color: 'var(--text-muted)',
     textDecoration: 'none',
     letterSpacing: '0.3px',
     transition: 'color 0.2s ease',
