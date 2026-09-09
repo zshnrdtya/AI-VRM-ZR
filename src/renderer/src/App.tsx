@@ -598,18 +598,51 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         }}
       >
         {/* Brand Header with Theme Toggle & Close Button on Mobile */}
-        <div style={styles.sidebarHeader}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src={LOGO_URL} alt="Zeera Logo" style={styles.sidebarLogo} />
-            <div>
-              <h2 style={styles.sidebarBrandTitle}>Zeera AI</h2>
-              <span style={styles.sidebarBrandSubtitle}>Virtual 3D Assistant</span>
+        <div style={{
+          ...styles.sidebarHeader,
+          padding: isMobile ? '16px 14px' : '20px',
+          gap: isMobile ? '8px' : '12px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '12px', minWidth: 0, flex: 1 }}>
+            <img src={LOGO_URL} alt="Zeera Logo" style={{
+              ...styles.sidebarLogo,
+              width: isMobile ? '36px' : '40px',
+              height: isMobile ? '36px' : '40px',
+              borderRadius: isMobile ? '8px' : '10px'
+            }} />
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <h2 style={{
+                ...styles.sidebarBrandTitle,
+                fontSize: isMobile ? '15.5px' : '17px',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden'
+              }}>Zeera AI</h2>
+              <span style={{
+                ...styles.sidebarBrandSubtitle,
+                fontSize: isMobile ? '10.5px' : '11px',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                display: 'block'
+              }}>Virtual 3D Assistant</span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: isMobile ? '10px' : '8px',
+            flexShrink: 0,
+            marginLeft: '6px'
+          }}>
             <button
               onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-              style={styles.themeToggleBtn}
+              style={{
+                ...styles.themeToggleBtn,
+                width: isMobile ? '38px' : '36px',
+                height: isMobile ? '38px' : '36px',
+                borderRadius: isMobile ? '10px' : '8px'
+              }}
               title={theme === 'dark' ? 'Beralih ke Mode Terang (Light Mode)' : 'Beralih ke Mode Gelap (Dark Mode)'}
               aria-label={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
             >
@@ -618,11 +651,16 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             {isMobile && (
               <button
                 onClick={() => setIsSidebarOpen(false)}
-                style={styles.sidebarCloseBtn}
+                style={{
+                  ...styles.sidebarCloseBtn,
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px'
+                }}
                 title="Tutup Menu"
                 aria-label="Tutup Menu"
               >
-                <X size={18} />
+                <X size={19} />
               </button>
             )}
           </div>
@@ -737,16 +775,27 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         </div>
 
         {/* Sidebar Footer: Theme Toggle & Creator Portfolio */}
-        <div style={styles.sidebarFooter}>
+        <div style={{
+          ...styles.sidebarFooter,
+          padding: isMobile ? '14px 14px 18px 14px' : '16px 14px'
+        }}>
           <button
             onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-            style={styles.themeToggleCard}
+            style={{
+              ...styles.themeToggleCard,
+              padding: isMobile ? '11px 14px' : '10px 14px',
+              marginBottom: isMobile ? '14px' : '12px',
+              borderRadius: '12px'
+            }}
             title={theme === 'dark' ? 'Beralih ke Mode Terang (Light Mode)' : 'Beralih ke Mode Gelap (Dark Mode)'}
             aria-label={theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {theme === 'dark' ? <Sun size={15} color="#fbbf24" /> : <Moon size={15} color="#6366f1" />}
-              <span style={styles.themeToggleText}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {theme === 'dark' ? <Sun size={16} color="#fbbf24" /> : <Moon size={16} color="#6366f1" />}
+              <span style={{
+                ...styles.themeToggleText,
+                fontSize: isMobile ? '13px' : '12.5px'
+              }}>
                 {theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
               </span>
             </span>
@@ -1489,30 +1538,31 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    padding: '8px 12px',
-    marginBottom: '10px',
+    padding: '10px 14px',
+    marginBottom: '12px',
     backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border-color)',
-    borderRadius: '10px',
+    borderRadius: '12px',
     color: 'var(--text-primary)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     touchAction: 'manipulation',
     WebkitTapHighlightColor: 'transparent',
-    boxShadow: 'var(--card-shadow)'
+    boxShadow: 'var(--card-shadow)',
+    minHeight: '42px'
   },
   themeToggleText: {
-    fontSize: '12px',
+    fontSize: '12.5px',
     fontWeight: 600,
     color: 'var(--text-primary)'
   },
   themeBadge: {
-    fontSize: '10px',
+    fontSize: '10.5px',
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    padding: '2px 6px',
-    borderRadius: '4px',
+    padding: '3px 8px',
+    borderRadius: '6px',
     backgroundColor: 'var(--accent-blue-subtle)',
     color: 'var(--accent-blue-text)'
   },
