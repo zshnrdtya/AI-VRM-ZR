@@ -862,6 +862,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                 gesture={gesture}
                 animationState={animationState}
                 onControllersReady={handleControllersReady}
+                theme={theme}
               />
             </div>
 
@@ -1879,8 +1880,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     letterSpacing: '0.2px'
   },
   userBubbleTime: {
-    fontSize: '10.5px',
-    color: 'rgba(255, 255, 255, 0.75)'
+    fontSize: '11px',
+    fontWeight: 500,
+    color: 'rgba(255, 255, 255, 0.8)',
+    letterSpacing: '0.2px'
   },
   aiBubbleAuthor: {
     fontSize: '11.5px',
@@ -1889,8 +1892,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     letterSpacing: '0.2px'
   },
   aiBubbleTime: {
-    fontSize: '10.5px',
-    color: 'var(--text-secondary)'
+    fontSize: '11px',
+    fontWeight: 500,
+    color: 'var(--text-secondary)',
+    letterSpacing: '0.2px'
   },
   bubbleText: {
     margin: 0,
