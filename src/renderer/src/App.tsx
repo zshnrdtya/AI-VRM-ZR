@@ -8,7 +8,8 @@ import { ChatMode } from './components/ChatMode'
 import { LipSyncController } from './avatar/LipSyncController'
 import { AudioPlayer } from './voice/AudioPlayer'
 import MODEL_URL from './assets/model.vrm?url'
-import LOGO_URL from './assets/logo-zz.png'
+import LOGO_URL from './assets/logo-zeera.jpeg'
+import LOGO_BANNER_URL from './assets/logo-zeera16-9.jpg'
 import {
   MessageSquare,
   Bot,
@@ -702,7 +703,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             </div>
           </button>
 
-          {/* Menu 3: Tentang & Panduan */}
+          {/* Menu 3: Filosofi & Panduan */}
           <button
             onClick={() => handleTabChange('about')}
             style={{
@@ -714,8 +715,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               <BookOpen size={19} />
             </span>
             <div style={styles.navTextWrapper}>
-              <span style={styles.navTitle}>Tentang & Panduan</span>
-              <span style={styles.navDesc}>Info Pembuat & Tata Cara</span>
+              <span style={styles.navTitle}>Filosofi & Panduan</span>
+              <span style={styles.navDesc}>Makna Brand & Tata Cara</span>
             </div>
           </button>
         </nav>
@@ -1171,7 +1172,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                 ...styles.brandTitle,
                 fontSize: isMobile ? '15px' : '17px'
               }}>
-                {isMobile ? 'Tentang & Panduan' : 'Tentang & Panduan Penggunaan'}
+                {isMobile ? 'Filosofi & Panduan' : 'Filosofi Logo & Panduan Zeera'}
               </h1>
             </div>
             <div style={styles.headerRight}>
@@ -1203,6 +1204,299 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             paddingBottom: isMobile ? 'max(40px, calc(20px + env(safe-area-inset-bottom, 0px)))' : '36px'
           }}>
             <div style={styles.aboutContainer}>
+              {/* Card 1: Identitas Brand & Filosofi Logo Zeera */}
+              <div
+                style={{
+                  ...styles.aboutCard,
+                  padding: isMobile ? '18px 16px' : '26px 30px',
+                  border: '1px solid var(--border-color)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={styles.aboutCardBadge}>IDENTITAS BRAND & FILOSOFI LOGO</div>
+                <h2
+                  style={{
+                    ...styles.aboutCardTitle,
+                    fontSize: isMobile ? '19px' : '23px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px'
+                  }}
+                >
+                  <span>Makna & Filosofi Logo Zeera</span>
+                </h2>
+                <p
+                  style={{
+                    ...styles.aboutCardLead,
+                    fontSize: isMobile ? '13px' : '14.5px',
+                    marginBottom: '18px'
+                  }}
+                >
+                  Logo <strong>Zeera</strong> dirancang sebagai representasi visual dari kecerdasan buatan masa depan yang adaptif, berkesinambungan, dan penuh inovasi. Setiap lekukan garis, titik simpul, dan gradasi warna memiliki filosofi mendalam:
+                </p>
+
+                {/* Visual Showcase 16:9 Banner */}
+                <div
+                  style={{
+                    width: '100%',
+                    borderRadius: '14px',
+                    overflow: 'hidden',
+                    marginBottom: '22px',
+                    border: '1px solid var(--border-color)',
+                    boxShadow: '0 8px 28px rgba(0, 0, 0, 0.25)',
+                    backgroundColor: '#070a14',
+                    position: 'relative'
+                  }}
+                >
+                  <img
+                    src={LOGO_BANNER_URL}
+                    alt="Filosofi Logo Zeera 16:9"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      aspectRatio: '16/9',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                </div>
+
+                {/* 3 Pilar Filosofi Logo */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    marginBottom: '20px'
+                  }}
+                >
+                  {/* 1. Bentuk Dasar (Form & Shape) */}
+                  <div
+                    style={{
+                      backgroundColor: 'var(--bg-main)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      padding: isMobile ? '14px 14px' : '16px 20px',
+                      boxShadow: 'var(--card-shadow)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          backgroundColor: 'var(--accent-blue-subtle)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'var(--accent-blue-text)',
+                          fontWeight: 700,
+                          fontSize: '13px'
+                        }}
+                      >
+                        1
+                      </div>
+                      <h4
+                        style={{
+                          margin: 0,
+                          fontSize: isMobile ? '15px' : '16px',
+                          fontWeight: 700,
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        Bentuk Dasar (Form & Shape)
+                      </h4>
+                    </div>
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        fontSize: isMobile ? '12.5px' : '13.5px',
+                        color: 'var(--text-secondary)',
+                        lineHeight: '1.6'
+                      }}
+                    >
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Inisial Huruf &quot;Z&quot; atau Angka &quot;2&quot;:</strong>{' '}
+                        Siluet utama logo ini membentuk huruf &quot;Z&quot; (mewakili nama &quot;Zeera&quot;) atau angka &quot;2&quot;. Garisnya dibuat melengkung dan mengalir, melambangkan fleksibilitas, adaptabilitas, dan pergerakan yang dinamis dalam mengikuti perkembangan zaman.
+                      </li>
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Simbol Infinity (Tak Terhingga):</strong>{' '}
+                        Alur pita yang menyambung dan saling tumpang tindih tanpa ujung membentuk pola menyerupai simbol infinity (∞). Ini bermakna kesinambungan (<em>sustainability</em>), pertumbuhan yang tidak pernah berhenti (<em>continuous improvement</em>), dan potensi kemajuan yang tanpa batas.
+                      </li>
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Struktur Pita 3D yang Saling Mengunci:</strong>{' '}
+                        Menunjukkan adanya sinergi, kolaborasi, dan ikatan yang kuat. Menandakan bahwa elemen-elemen di dalam sistem/brand saling mendukung untuk menciptakan kesatuan yang kokoh.
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* 2. Elemen Geometris & Cahaya (Kanan Atas) */}
+                  <div
+                    style={{
+                      backgroundColor: 'var(--bg-main)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      padding: isMobile ? '14px 14px' : '16px 20px',
+                      boxShadow: 'var(--card-shadow)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          backgroundColor: 'rgba(168, 85, 247, 0.18)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#c084fc',
+                          fontWeight: 700,
+                          fontSize: '13px'
+                        }}
+                      >
+                        2
+                      </div>
+                      <h4
+                        style={{
+                          margin: 0,
+                          fontSize: isMobile ? '15px' : '16px',
+                          fontWeight: 700,
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        Elemen Geometris & Cahaya (Kanan Atas)
+                      </h4>
+                    </div>
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        fontSize: isMobile ? '12.5px' : '13.5px',
+                        color: 'var(--text-secondary)',
+                        lineHeight: '1.6'
+                      }}
+                    >
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Simpul Jaringan (Network Node) / Rasi Bintang:</strong>{' '}
+                        Pada ujung atas terdapat elemen garis-garis yang terhubung menyerupai jaring (koneksi) atau rasi bintang. Ini merepresentasikan teknologi, digitalisasi, konektivitas global, dan kemampuan membangun jaringan yang luas.
+                      </li>
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Titik Cahaya (Glowing Dot):</strong>{' '}
+                        Titik ungu yang menyala di ujung melambangkan &quot;titik terang&quot;, puncak pencapaian, inovasi, atau percikan ide (<em>spark of idea</em>). Ini menunjukkan bahwa brand ini adalah <em>trendsetter</em> atau penunjuk arah menuju masa depan yang cerah.
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* 3. Filosofi Warna */}
+                  <div
+                    style={{
+                      backgroundColor: 'var(--bg-main)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      padding: isMobile ? '14px 14px' : '16px 20px',
+                      boxShadow: 'var(--card-shadow)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          backgroundColor: 'rgba(236, 72, 153, 0.18)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#f472b6',
+                          fontWeight: 700,
+                          fontSize: '13px'
+                        }}
+                      >
+                        3
+                      </div>
+                      <h4
+                        style={{
+                          margin: 0,
+                          fontSize: isMobile ? '15px' : '16px',
+                          fontWeight: 700,
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        Filosofi Warna
+                      </h4>
+                    </div>
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        fontSize: isMobile ? '12.5px' : '13.5px',
+                        color: 'var(--text-secondary)',
+                        lineHeight: '1.6'
+                      }}
+                    >
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Ungu (Purple Gradient):</strong>{' '}
+                        Warna dominan ungu melambangkan kreativitas, imajinasi, visi masa depan, dan inovasi. Dalam konteks modern, gradasi ungu sering dikaitkan dengan teknologi tingkat lanjut (seperti AI, cyber, atau metaverse), kecerdasan, dan kualitas yang premium/eksklusif.
+                      </li>
+                      <li>
+                        <strong style={{ color: 'var(--text-primary)' }}>Hitam/Abu-abu Gelap (Pada Dimensi/Bayangan):</strong>{' '}
+                        Memberikan efek kedalaman (<em>depth</em>). Warna gelap ini menyimbolkan fondasi yang kuat, profesionalisme, ketegasan, stabilitas, dan keandalan di balik inovasi yang mereka ciptakan.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Kesimpulan Keseluruhan Callout Box */}
+                <div
+                  style={{
+                    backgroundColor: 'var(--accent-blue-subtle)',
+                    border: '1px solid rgba(59, 130, 246, 0.35)',
+                    borderRadius: '12px',
+                    padding: isMobile ? '14px 16px' : '16px 20px',
+                    boxShadow: 'var(--card-shadow)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <Sparkles size={16} color="var(--accent-blue-text)" />
+                    <h5
+                      style={{
+                        margin: 0,
+                        fontSize: '13.5px',
+                        fontWeight: 700,
+                        color: 'var(--accent-blue-text)',
+                        letterSpacing: '0.3px',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      Kesimpulan Keseluruhan
+                    </h5>
+                  </div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: isMobile ? '12.5px' : '13.5px',
+                      color: 'var(--text-lead)',
+                      lineHeight: '1.6'
+                    }}
+                  >
+                    Logo <strong>&quot;Zeera&quot;</strong> ini merepresentasikan sebuah brand atau entitas yang inovatif, visioner, dan berbasis pada teknologi/konektivitas. Brand ini memiliki fondasi yang kuat namun tetap fleksibel, selalu bergerak maju untuk menciptakan pertumbuhan tanpa batas, dan bertujuan untuk menjadi pionir atau cahaya penuntun di industrinya.
+                  </p>
+                </div>
+              </div>
+
               {/* Creator Card */}
               <div style={{
                 ...styles.aboutCard,
@@ -1269,19 +1563,20 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                       <Bot size={22} color="#60a5fa" />
                     </div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>1. Mode AI Asisten Virtual (Avatar 3D & Suara Natural)</h4>
+                      <h4 style={styles.guideHeading}>1. Mode AI Asisten Virtual (Avatar 3D, Suara Natural & Real-Time Loader)</h4>
                       <p style={styles.guideText}>
-                        Rasakan pengalaman interaksi virtual yang hidup bersama avatar 3D anime interaktif berbasis model <strong>Pixiv VRM</strong>. Avatar dilengkapi dengan simulasi bernafas alami (<em>idle</em>), kedipan mata otomatis (<em>blink</em>), ekspresi wajah responsif (senang, terkejut, rileks), serta gestur dinamis.
+                        Rasakan pengalaman interaksi virtual yang hidup bersama avatar 3D anime interaktif berbasis model <strong>Pixiv VRM</strong>. Avatar dilengkapi dengan simulasi bernafas alami (<em>idle</em>), kedipan mata otomatis (<em>blink</em>), ekspresi wajah responsif (senang, terkejut, santai), serta gestur dinamis.
                       </p>
                       <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: 'var(--text-lead)', lineHeight: '1.6' }}>
-                        <li><strong>Percakapan Suara Real-Time:</strong> Tekan tombol <strong>Mikrofon</strong> di bar kontrol bawah untuk berbicara langsung dalam bahasa Indonesia.</li>
+                        <li><strong>Percakapan Suara Real-Time:</strong> Tekan tombol <strong>Mikrofon</strong> di bar kontrol bawah untuk berbicara langsung dalam Bahasa Indonesia.</li>
                         <li><strong>Sintesis Suara & Lip-Sync:</strong> Zeera merespon dengan suara natural <em>Microsoft Edge Neural TTS (id-ID-GadisNeural)</em> yang dipadukan dengan sinkronisasi gerakan bibir (<em>Lip-Sync</em>) presisi via Web Audio API.</li>
                         <li><strong>Input Teks Cepat:</strong> Anda juga dapat mengetik pesan singkat di kotak input bawah dan menekan Enter.</li>
+                        <li><strong>UX Loading Cerdas & Real-Time Progress:</strong> Saat memuat model 3D, sistem menampilkan teks ramah <em>&quot;Sebentar ya, Zeeranya siap-siap dulu...&quot;</em> disertai persentase progres unduhan dan animasi progress bar yang halus secara real-time.</li>
                       </ul>
                     </div>
                   </div>
 
-                  {/* Step 2 (FITUR TERBARU) */}
+                  {/* Step 2 (FITUR TERBARU & MULTI-MODEL) */}
                   <div style={{
                     ...styles.guideItem,
                     flexDirection: isMobile ? 'column' : 'row',
@@ -1294,8 +1589,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                       <MessageSquare size={22} color="var(--accent-blue-text)" />
                     </div>
                     <div style={styles.guideContent}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                        <h4 style={{ ...styles.guideHeading, margin: 0 }}>2. Mode AI Text Chat & Manajemen Sesi (Local-First)</h4>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <h4 style={{ ...styles.guideHeading, margin: 0 }}>2. Mode AI Text Chat, Multi-Model & Rich Markdown</h4>
                         <span style={{
                           fontSize: '10px',
                           fontWeight: 700,
@@ -1303,36 +1598,50 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                           backgroundColor: 'var(--accent-blue-subtle)',
                           padding: '2px 6px',
                           borderRadius: '4px'
-                        }}>FITUR TERBARU</span>
+                        }}>UPDATED</span>
                       </div>
                       <p style={styles.guideText}>
-                        Ruang obrolan teks modern bertema ala ChatGPT yang ditenagai oleh <strong>Google Gemini AI (gemini-3.1-flash-lite)</strong>. Mode ini beroperasi dalam format teks murni tanpa suara (<em>silent mode</em>), ideal untuk kebutuhan belajar, coding, diskusi panjang, atau saat berada di ruang publik.
+                        Ruang obrolan teks modern bertema ala ChatGPT yang ditenagai oleh mesin AI generasi terbaru. Beroperasi secara <em>silent mode</em> (tanpa suara), ideal untuk coding, riset, diskusi mendalam, maupun konsultasi sehari-hari.
                       </p>
                       <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: 'var(--text-lead)', lineHeight: '1.65' }}>
-                        <li><strong>Penyimpanan Persisten (IndexedDB):</strong> Riwayat percakapan Anda otomatis tersimpan di memori browser secara <em>local-first</em> menggunakan database Dexie. Riwayat tidak akan hilang meskipun Anda merefresh browser, serta menjamin privasi penuh tanpa perlu server database terpisah.</li>
-                        <li><strong>Daftar Riwayat di Sidebar:</strong> Semua percakapan yang pernah Anda lakukan tercatat rapi di panel samping kiri dan dapat diakses kembali kapan saja.</li>
-                        <li><strong>Fitur Auto-Title Otomatis:</strong> Saat Anda memulai obrolan baru, sistem secara cerdas menamai judul percakapan dari kalimat pembuka Anda.</li>
-                        <li><strong>Navigasi Chat Baru Instan:</strong> Mengklik menu utama <strong>AI Text Chat</strong> di sidebar atau tombol <strong>Baru</strong> akan selalu membuka lembar obrolan baru (0 pesan), sehingga Anda bebas memulai topik baru tanpa menimpa sesi lama.</li>
-                        <li><strong>Pintasan Keyboard Efisien:</strong> Tekan <strong>Enter</strong> untuk mengirim pesan, atau <strong>Shift + Enter</strong> untuk menyisipkan baris baru di textarea.</li>
-                        <li><strong>Manajemen & Hapus Sesi:</strong> Hapus obrolan yang tidak diperlukan melalui tombol ikon sampah di daftar riwayat sidebar atau tombol <strong>Hapus Chat</strong> di header.</li>
+                        <li><strong>Model Selector AI (Custom Dropdown):</strong> Pengguna dapat memilih versi model AI secara bebas melalui tombol dropdown pil di samping tombol Kirim:
+                          <div style={{ margin: '6px 0 6px 0', padding: '8px 12px', backgroundColor: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '12px', lineHeight: '1.6' }}>
+                            • <strong>Zeera AI 1.1</strong> (<em>gemini-3.1-flash-lite</em>): Respon cepat & latensi sangat minim.<br />
+                            • <strong>Zeera AI 1.2</strong> (<em>gemini-3.6-flash</em>): Kemampuan penalaran paling cerdas & komprehensif.<br />
+                            • <strong>Zeera AI 1.3</strong> (<em>gemini-3.5-flash-lite</em>): Keseimbangan akurasi logika dan efisiensi.<br />
+                            • <strong>Zeera AI 1.4</strong> (<em>gemini-flash-lite-latest</em>): Rilis stabil mutakhir varian flash-lite.
+                          </div>
+                          Pilihan model otomatis tersimpan di <code>localStorage</code> sehingga selalu aktif saat kembali.
+                        </li>
+                        <li><strong>Pemisah Tanggal Otomatis (Date Divider):</strong> Pesan otomatis dipisahkan berdasarkan hari pengiriman kalender dengan label pintar (<em>&quot;Hari Ini&quot;</em>, <em>&quot;Kemarin&quot;</em>, atau format tanggal lengkap Indonesia).</li>
+                        <li><strong>Rendering Markdown & Tabel GFM (remark-gfm):</strong> Balasan Zeera mendukung format Markdown lengkap termasuk <strong>tabel data interaktif</strong>, blok sintaks kode dengan penyorotan rapi, daftar ceklis, dan tipografi teks berstruktur.</li>
+                        <li><strong>Salin Pesan Sekali Klik:</strong> Setiap pesan dari Zeera dilengkapi tombol salin (<em>Copy to Clipboard</em>) dengan indikator centang visual saat berhasil disalin.</li>
+                        <li><strong>Penyimpanan Persisten (Local-First Dexie/IndexedDB):</strong> Seluruh riwayat obrolan tersimpan aman di peramban lokal Anda tanpa server pihak ketiga. Percakapan tidak hilang saat refresh browser.</li>
+                        <li><strong>Auto-Title Cerdas & Manajemen Sesi:</strong> Percakapan otomatis diberi judul dari kalimat pembuka pertama Anda. Buat obrolan baru via menu sidebar / tombol <strong>Baru</strong>, atau hapus sesi yang sudah tidak digunakan.</li>
+                        <li><strong>Pintasan Keyboard:</strong> Tekan <strong>Enter</strong> untuk mengirim pesan, atau <strong>Shift + Enter</strong> untuk menyisipkan baris baru di kotak teks.</li>
                       </ul>
                     </div>
                   </div>
 
-                  {/* Step 3 */}
+                  {/* Step 3 (FITUR TEMA DUAL) */}
                   <div style={{
                     ...styles.guideItem,
                     flexDirection: isMobile ? 'column' : 'row',
                     gap: isMobile ? '10px' : '16px'
                   }}>
-                    <div style={styles.guideIcon}>
-                      <Zap size={22} color="#fbbf24" />
+                    <div style={{ ...styles.guideIcon, backgroundColor: 'rgba(251, 191, 36, 0.18)' }}>
+                      <Sun size={22} color="#f59e0b" />
                     </div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>3. Arsitektur Performa Tanpa Reload (CSS-Based Multi-Stage)</h4>
+                      <h4 style={styles.guideHeading}>3. Sistem Tema Dinamis (Mode Gelap & Mode Terang)</h4>
                       <p style={styles.guideText}>
-                        Sistem navigasi dirancang dengan arsitektur performa tinggi. Berpindah antara mode <strong>AI Asisten Virtual</strong>, <strong>AI Text Chat</strong>, dan <strong>Panduan</strong> berjalan seketika tanpa perlu me-reload model karakter 3D atau merusak WebGL Context Three.js. Suara TTS juga otomatis dihentikan saat Anda berpindah ke mode teks demi menjaga ketenangan Anda.
+                        Zeera AI dilengkapi sistem tema ganda yang dapat dialihkan kapan saja melalui tombol matahari/bulan di bagian atas sidebar:
                       </p>
+                      <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px', fontSize: '12.5px', color: 'var(--text-lead)', lineHeight: '1.6' }}>
+                        <li><strong>Peralihan Mulus Berbasis CSS Variables:</strong> Menyesuaikan warna latar belakang, card glassmorphic, teks, border, dan bayangan secara serentak tanpa reload halaman.</li>
+                        <li><strong>Rendering Kanvas 3D Adaptif:</strong> Background kanvas avatar 3D menyesuaikan palet warna tema secara otomatis tanpa merusak shader material Three.js VRM.</li>
+                        <li><strong>Persistensi Tema:</strong> Pilihan mode gelap atau terang Anda tersimpan permanen di memori lokal (<code>localStorage</code>).</li>
+                      </ul>
                     </div>
                   </div>
 
@@ -1343,12 +1652,12 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                     gap: isMobile ? '10px' : '16px'
                   }}>
                     <div style={styles.guideIcon}>
-                      <Smartphone size={22} color="#a78bfa" />
+                      <Zap size={22} color="#fbbf24" />
                     </div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>4. Tampilan Responsif Layar Smartphone</h4>
+                      <h4 style={styles.guideHeading}>4. Arsitektur Performa Tanpa Reload (CSS-Based Multi-Stage)</h4>
                       <p style={styles.guideText}>
-                        Antarmuka Zeera AI sepenuhnya adaptif untuk perangkat ponsel cerdas dan tablet. Pada layar mobile, sidebar navigasi berubah menjadi menu geser (<em>drawer overlay</em>) yang dapat dibuka melalui tombol hamburger di pojok kiri atas, dan kamera panggung 3D secara otomatis menyesuaikan rasio vertikal layar.
+                        Sistem navigasi dirancang dengan arsitektur performa tinggi. Berpindah antara mode <strong>AI Asisten Virtual</strong>, <strong>AI Text Chat</strong>, dan <strong>Filosofi & Panduan</strong> berjalan seketika tanpa perlu me-reload model karakter 3D atau merusak WebGL Context Three.js. Suara TTS juga otomatis dihentikan saat Anda berpindah ke mode teks demi menjaga ketenangan Anda.
                       </p>
                     </div>
                   </div>
@@ -1360,10 +1669,27 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                     gap: isMobile ? '10px' : '16px'
                   }}>
                     <div style={styles.guideIcon}>
+                      <Smartphone size={22} color="#a78bfa" />
+                    </div>
+                    <div style={styles.guideContent}>
+                      <h4 style={styles.guideHeading}>5. Tampilan Responsif Layar Smartphone</h4>
+                      <p style={styles.guideText}>
+                        Antarmuka Zeera AI sepenuhnya adaptif untuk perangkat ponsel cerdas dan tablet. Pada layar mobile, sidebar navigasi berubah menjadi menu geser (<em>drawer overlay</em>) yang dapat dibuka melalui tombol hamburger di pojok kiri atas, dan kamera panggung 3D secara otomatis menyesuaikan rasio vertikal layar.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 6 */}
+                  <div style={{
+                    ...styles.guideItem,
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: isMobile ? '10px' : '16px'
+                  }}>
+                    <div style={styles.guideIcon}>
                       <Lightbulb size={22} color="#34d399" />
                     </div>
                     <div style={styles.guideContent}>
-                      <h4 style={styles.guideHeading}>5. Tips Berinteraksi dengan Zeera AI</h4>
+                      <h4 style={styles.guideHeading}>6. Tips Berinteraksi dengan Zeera AI</h4>
                       <p style={styles.guideText}>
                         Zeera diprogram dengan kepribadian yang ceria, ramah, santai, dan solutif layaknya teman akrab. Anda dapat menyapa santai, meminta saran kreatif, membahas pemrograman, berdiskusi topik sains, atau meminta Zeera menceritakan lelucon menghibur.
                       </p>
@@ -1388,16 +1714,24 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   <span style={styles.techBadge}>TypeScript</span>
                   <span style={styles.techBadge}>Three.js (WebGL)</span>
                   <span style={styles.techBadge}>Pixiv Three-VRM</span>
-                  <span style={styles.techBadge}>Google Gemini AI (gemini-3.1-flash-lite)</span>
+                  <span style={styles.techBadge}>Realtime Progress Loader</span>
+                  <span style={styles.techBadge}>Google Gemini AI (Multi-Model)</span>
+                  <span style={styles.techBadge}>Gemini 3.1, 3.5, 3.6 Flash</span>
+                  <span style={styles.techBadge}>Custom Model Selector</span>
+                  <span style={styles.techBadge}>React Markdown</span>
+                  <span style={styles.techBadge}>remark-gfm (GFM Tables)</span>
                   <span style={styles.techBadge}>IndexedDB & Dexie.js</span>
                   <span style={styles.techBadge}>dexie-react-hooks (Live Queries)</span>
                   <span style={styles.techBadge}>Local-First Architecture</span>
                   <span style={styles.techBadge}>Auto-Title Session Engine</span>
+                  <span style={styles.techBadge}>Date Divider Engine</span>
+                  <span style={styles.techBadge}>Dark & Light Theming (CSS Vars)</span>
                   <span style={styles.techBadge}>ChatGPT-Style Chat UI</span>
                   <span style={styles.techBadge}>Multi-Turn Conversation Memory</span>
                   <span style={styles.techBadge}>Microsoft Edge Neural TTS (GadisNeural)</span>
                   <span style={styles.techBadge}>Web Audio API (Realtime Lip-Sync)</span>
                   <span style={styles.techBadge}>Web Speech Recognition (Browser STT)</span>
+                  <span style={styles.techBadge}>Clipboard API (Instant Copy)</span>
                 </div>
               </div>
 
@@ -1486,7 +1820,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '40px',
     height: '40px',
     borderRadius: '10px',
-    objectFit: 'contain',
+    objectFit: 'cover',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)'
   },
   sidebarBrandTitle: {
