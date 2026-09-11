@@ -126,6 +126,11 @@ export class VRMScene {
           if (progress.total > 0) {
             const percent = Math.round((progress.loaded / progress.total) * 100)
             onProgress?.(percent)
+          } else if (progress.loaded > 0) {
+            // Estimasi persentase jika Content-Length tidak tersedia (~8MB estimasi model)
+            const estimatedTotal = 8 * 1024 * 1024
+            const percent = Math.min(95, Math.round((progress.loaded / estimatedTotal) * 100))
+            onProgress?.(percent)
           }
         },
         (error) => {
