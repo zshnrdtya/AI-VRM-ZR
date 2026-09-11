@@ -4,7 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { db, MessageItem } from '../lib/db'
-import LOGO_URL from '../assets/logo-zz.png'
+import LOGO_URL from '../assets/logo-zeera.jpeg'
 import {
   Menu,
   Plus,
@@ -1384,7 +1384,8 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
   emptyLogo: {
     width: '42px',
     height: '42px',
-    objectFit: 'contain'
+    borderRadius: '10px',
+    objectFit: 'cover'
   },
   emptyTitle: {
     margin: '0 0 8px 0',
