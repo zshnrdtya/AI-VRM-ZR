@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { useLiveQuery } from 'dexie-react-hooks'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { db, MessageItem } from '../lib/db'
 import LOGO_URL from '../assets/logo-zz.png'
 import {
@@ -460,6 +461,66 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         <h3 style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 600, margin: '6px 0 3px 0', color: 'var(--text-primary)' }}>
           {children}
         </h3>
+      ),
+      table: ({ children }: any) => (
+        <div style={{ width: '100%', overflowX: 'auto', margin: '10px 0', WebkitOverflowScrolling: 'touch' }}>
+          <table
+            style={{
+              borderCollapse: 'collapse',
+              width: '100%',
+              fontSize: isMobile ? '13px' : '14px',
+              border: '1px solid var(--border-color)',
+              borderRadius: '8px',
+              overflow: 'hidden'
+            }}
+          >
+            {children}
+          </table>
+        </div>
+      ),
+      thead: ({ children }: any) => (
+        <thead style={{ backgroundColor: 'var(--hover-bg, rgba(0,0,0,0.06))' }}>
+          {children}
+        </thead>
+      ),
+      tbody: ({ children }: any) => (
+        <tbody>{children}</tbody>
+      ),
+      tr: ({ children }: any) => (
+        <tr
+          style={{
+            borderBottom: '1px solid var(--border-color)',
+            transition: 'background-color 0.15s ease'
+          }}
+        >
+          {children}
+        </tr>
+      ),
+      th: ({ children }: any) => (
+        <th
+          style={{
+            border: '1px solid var(--border-color)',
+            padding: '8px 12px',
+            textAlign: 'left',
+            fontWeight: 650,
+            color: 'var(--text-primary)',
+            backgroundColor: 'var(--hover-bg, rgba(0,0,0,0.08))'
+          }}
+        >
+          {children}
+        </th>
+      ),
+      td: ({ children }: any) => (
+        <td
+          style={{
+            border: '1px solid var(--border-color)',
+            padding: '8px 12px',
+            textAlign: 'left',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          {children}
+        </td>
       )
     }),
     [isMobile]
@@ -690,7 +751,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                     </p>
                   ) : (
                     <div style={chatStyles.markdownContainer}>
-                      <ReactMarkdown components={markdownComponents}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                         {msg.text}
                       </ReactMarkdown>
                     </div>
@@ -763,7 +824,7 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                 }}
               >
                 <div style={chatStyles.markdownContainer}>
-                  <ReactMarkdown components={markdownComponents}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                     {streamingText}
                   </ReactMarkdown>
                 </div>
