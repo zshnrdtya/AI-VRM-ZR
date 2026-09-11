@@ -1236,30 +1236,169 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                   Logo <strong>Zeera</strong> dirancang sebagai representasi visual dari kecerdasan buatan masa depan yang adaptif, berkesinambungan, dan penuh inovasi. Setiap lekukan garis, titik simpul, dan gradasi warna memiliki filosofi mendalam:
                 </p>
 
-                {/* Visual Showcase 16:9 Banner */}
+                {/* Visual Showcase 2-Kolom Seimbang */}
                 <div
                   style={{
-                    width: '100%',
-                    borderRadius: '14px',
-                    overflow: 'hidden',
-                    marginBottom: '22px',
-                    border: '1px solid var(--border-color)',
-                    boxShadow: '0 8px 28px rgba(0, 0, 0, 0.25)',
-                    backgroundColor: '#070a14',
-                    position: 'relative'
+                    display: 'grid',
+                    gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+                    gap: isMobile ? '14px' : '18px',
+                    marginBottom: '22px'
                   }}
                 >
-                  <img
-                    src={LOGO_BANNER_URL}
-                    alt="Filosofi Logo Zeera 16:9"
+                  {/* Kolom 1: Banner Widescreen 16:9 */}
+                  <div
                     style={{
-                      width: '100%',
-                      height: 'auto',
-                      aspectRatio: '16/9',
-                      objectFit: 'cover',
-                      display: 'block'
+                      backgroundColor: 'var(--bg-main)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '14px',
+                      overflow: 'hidden',
+                      boxShadow: 'var(--card-shadow)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      transition: 'all 0.2s ease'
                     }}
-                  />
+                  >
+                    <div
+                      style={{
+                        width: '100%',
+                        aspectRatio: '16/9',
+                        backgroundColor: '#070a14',
+                        overflow: 'hidden',
+                        position: 'relative'
+                      }}
+                    >
+                      <img
+                        src={LOGO_BANNER_URL}
+                        alt="Logo Zeera Versi 16:9"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                      />
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          left: '10px',
+                          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '6px'
+                        }}
+                      >
+                        Landscape 16:9
+                      </span>
+                    </div>
+                    <div style={{ padding: '12px 14px', borderTop: '1px solid var(--border-color)', flex: 1 }}>
+                      <h5
+                        style={{
+                          margin: '0 0 4px 0',
+                          fontSize: '13.5px',
+                          fontWeight: 600,
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        Logo Zeera (Widescreen 16:9)
+                      </h5>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: '12px',
+                          color: 'var(--text-secondary)',
+                          lineHeight: '1.4'
+                        }}
+                      >
+                        Format lanskap beresolusi tinggi untuk showcase visual utama, presentasi, dan banner brand.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Kolom 2: Logo Square Icon 1:1 */}
+                  <div
+                    style={{
+                      backgroundColor: 'var(--bg-main)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '14px',
+                      overflow: 'hidden',
+                      boxShadow: 'var(--card-shadow)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '100%',
+                        aspectRatio: '16/9',
+                        backgroundColor: '#070a14',
+                        overflow: 'hidden',
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '12px'
+                      }}
+                    >
+                      <img
+                        src={LOGO_URL}
+                        alt="Logo Zeera Versi 1:1"
+                        style={{
+                          height: '100%',
+                          width: 'auto',
+                          aspectRatio: '1/1',
+                          objectFit: 'contain',
+                          borderRadius: '12px',
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
+                          display: 'block'
+                        }}
+                      />
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          left: '10px',
+                          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '6px'
+                        }}
+                      >
+                        Square 1:1
+                      </span>
+                    </div>
+                    <div style={{ padding: '12px 14px', borderTop: '1px solid var(--border-color)', flex: 1 }}>
+                      <h5
+                        style={{
+                          margin: '0 0 4px 0',
+                          fontSize: '13.5px',
+                          fontWeight: 600,
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        Logo Zeera (Square Icon 1:1)
+                      </h5>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: '12px',
+                          color: 'var(--text-secondary)',
+                          lineHeight: '1.4'
+                        }}
+                      >
+                        Format bujur sangkar presisi untuk identitas favicon web, ikon aplikasi, dan logo avatar sidebar.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* 3 Pilar Filosofi Logo */}
