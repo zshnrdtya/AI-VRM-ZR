@@ -97,8 +97,24 @@ export const ChatMode: React.FC<ChatModeProps> = ({
   const [streamingText, setStreamingText] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false)
   const modelDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Menyesuaikan tinggi textarea secara dinamis sesuai teks
+  const handleInputResize = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto' // Reset tinggi
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px` // Sesuaikan dengan konten
+    }
+  }
+
+  // Otomatis reset tinggi textarea saat inputMessage kosong
+  useEffect(() => {
+    if (!inputMessage && textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
+  }, [inputMessage])
 
   // Menutup dropdown model saat klik di luar area atau menekan tombol Escape
   useEffect(() => {
@@ -198,6 +214,9 @@ export const ChatMode: React.FC<ChatModeProps> = ({
     }
 
     setInputMessage('')
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
     setIsLoading(true)
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
@@ -935,16 +954,20 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
         <div
           style={{
             ...chatStyles.inputCard,
-            padding: isMobile ? '6px 8px 6px 12px' : '8px 12px'
+            padding: isMobile ? '6px 8px 6px 12px' : '8px 12px',
+            alignItems: 'flex-end'
           }}
         >
           <textarea
+            ref={textareaRef}
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
+            onInput={handleInputResize}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
                 handleSendMessage()
+                if (textareaRef.current) textareaRef.current.style.height = 'auto'
               }
             }}
             placeholder={
@@ -965,7 +988,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             style={{
               position: 'relative',
               flexShrink: 0,
-              marginRight: isMobile ? '4px' : '8px'
+              marginRight: isMobile ? '4px' : '8px',
+              marginBottom: isMobile ? '1px' : '2px'
             }}
           >
             {/* Tombol Pemilih (Trigger) */}
@@ -1086,7 +1110,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
               cursor: inputMessage.trim() && !isLoading ? 'pointer' : 'not-allowed',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '6px',
+              marginBottom: isMobile ? '1px' : '2px'
             }}
           >
             <span>Kirim</span>
@@ -1330,7 +1355,7 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     border: '1px solid var(--border-color)',
     borderRadius: '14px',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     padding: '8px 12px',
     gap: '10px',
     boxShadow: 'var(--card-shadow)',
@@ -1345,8 +1370,11 @@ const chatStyles: { [key: string]: React.CSSProperties } = {
     fontSize: '14px',
     resize: 'none',
     fontFamily: 'inherit',
-    padding: '4px 6px',
-    maxHeight: '120px'
+    padding: '8px 6px',
+    minHeight: '38px',
+    maxHeight: '120px',
+    overflowY: 'auto',
+    lineHeight: '1.5'
   },
   sendBtn: {
     backgroundColor: 'var(--accent-blue)',
