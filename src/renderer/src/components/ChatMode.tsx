@@ -15,7 +15,8 @@ import {
   MessageSquare,
   Compass,
   Copy,
-  Check
+  Check,
+  ChevronDown
 } from 'lucide-react'
 
 interface ChatModeProps {
@@ -96,6 +97,30 @@ export const ChatMode: React.FC<ChatModeProps> = ({
   const [streamingText, setStreamingText] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false)
+  const modelDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Menutup dropdown model saat klik di luar area atau menekan tombol Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modelDropdownRef.current && !modelDropdownRef.current.contains(e.target as Node)) {
+        setIsModelDropdownOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsModelDropdownOpen(false)
+      }
+    }
+    if (isModelDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isModelDropdownOpen])
 
   // Riwayat obrolan sesi untuk konteks Gemini
   const conversationHistoryRef = useRef<{ role: 'user' | 'model'; parts: [{ text: string }] }[]>([])
@@ -934,44 +959,123 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             rows={1}
             disabled={isLoading}
           />
-          <select
-            value={selectedModel}
-            onChange={(e) => {
-              setSelectedModel(e.target.value)
-              localStorage.setItem('zeera_chat_model', e.target.value)
-            }}
-            disabled={isLoading}
+          {/* Custom Model Selector Dropdown */}
+          <div
+            ref={modelDropdownRef}
             style={{
-              padding: isMobile ? '7px 8px' : '8px 12px',
-              borderRadius: isMobile ? '8px' : '10px',
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              fontSize: isMobile ? '12px' : '13.5px',
-              fontWeight: 500,
+              position: 'relative',
               flexShrink: 0,
-              marginRight: isMobile ? '4px' : '8px',
-              transition: 'all 0.2s ease',
-              boxShadow: 'var(--card-shadow)'
+              marginRight: isMobile ? '4px' : '8px'
             }}
-            title="Pilih Model AI"
-            aria-label="Pilih Model AI"
           >
-            {AI_MODELS.map((m) => (
-              <option
-                key={m.id}
-                value={m.id}
+            {/* Tombol Pemilih (Trigger) */}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => !isLoading && setIsModelDropdownOpen(!isModelDropdownOpen)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  if (!isLoading) setIsModelDropdownOpen(!isModelDropdownOpen)
+                }
+              }}
+              title="Pilih Model AI"
+              aria-haspopup="listbox"
+              aria-expanded={isModelDropdownOpen}
+              style={{
+                padding: isMobile ? '6px 10px' : '6px 12px',
+                borderRadius: '20px',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                fontSize: isMobile ? '12px' : '13px',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                userSelect: 'none',
+                boxShadow: 'var(--card-shadow)',
+                transition: 'all 0.2s ease',
+                opacity: isLoading ? 0.6 : 1
+              }}
+            >
+              <span>{AI_MODELS.find((m) => m.id === selectedModel)?.name || 'Pilih Model'}</span>
+              <ChevronDown
+                size={13}
                 style={{
+                  opacity: 0.7,
+                  transform: isModelDropdownOpen ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.2s ease',
+                  flexShrink: 0
+                }}
+              />
+            </div>
+
+            {/* Daftar Menu Pop-up (Buka ke Atas / Droptop) */}
+            {isModelDropdownOpen && (
+              <div
+                role="listbox"
+                aria-label="Daftar Model AI"
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 8px)',
+                  right: 0,
                   backgroundColor: 'var(--bg-card-solid)',
-                  color: 'var(--text-primary)'
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+                  padding: '6px 0',
+                  minWidth: '150px',
+                  zIndex: 100,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: 'hidden'
                 }}
               >
-                {m.name}
-              </option>
-            ))}
-          </select>
+                {AI_MODELS.map((model) => {
+                  const isSelected = selectedModel === model.id
+                  return (
+                    <div
+                      key={model.id}
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        setSelectedModel(model.id)
+                        localStorage.setItem('zeera_chat_model', model.id)
+                        setIsModelDropdownOpen(false)
+                      }}
+                      style={{
+                        padding: '8px 14px',
+                        fontSize: '13px',
+                        color: isSelected ? 'var(--accent-blue-text)' : 'var(--text-primary)',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? 'var(--accent-blue-subtle)' : 'transparent',
+                        fontWeight: isSelected ? 600 : 400,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '10px',
+                        whiteSpace: 'nowrap',
+                        transition: 'background-color 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--hover-bg)'
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
+                    >
+                      <span>{model.name}</span>
+                      {isSelected && (
+                        <Check size={14} style={{ color: 'var(--accent-blue)', flexShrink: 0 }} />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
           <button
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isLoading}
