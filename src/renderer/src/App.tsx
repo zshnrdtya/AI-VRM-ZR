@@ -32,7 +32,8 @@ import {
   Rocket,
   Send,
   Sun,
-  Moon
+  Moon,
+  Pencil
 } from 'lucide-react'
 
 type NavTab = 'assistant' | 'chat' | 'about'
@@ -52,6 +53,8 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [showSplash, setShowSplash] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null)
+  const [editTitleValue, setEditTitleValue] = useState('')
 
   useEffect(() => {
     // Mulai efek pudar setelah 2 detik
@@ -223,6 +226,14 @@ export default function App() {
         handleStartNewChat()
       }
     }
+  }
+
+  const handleSaveRename = async (sessionId: string) => {
+    if (editTitleValue.trim() !== '') {
+      await db.sessions.update(sessionId, { title: editTitleValue.trim() })
+    }
+    setEditingSessionId(null)
+    setEditTitleValue('')
   }
 
   const [emotion, setEmotion] = useState<Emotion>('neutral')
@@ -838,27 +849,86 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                 .filter((s) => s.title !== 'Percakapan Baru')
                 .map((sess) => {
                   const isActive = activeTab === 'chat' && activeSessionId === sess.id
+                  const isEditing = editingSessionId === sess.id
+
                   return (
                     <div
                       key={sess.id}
-                      onClick={() => handleSelectSession(sess.id)}
+                      onClick={() => {
+                        if (!isEditing) {
+                          handleSelectSession(sess.id)
+                        }
+                      }}
                       style={{
                         ...styles.historyItem,
                         ...(isActive ? styles.historyItemActive : {})
                       }}
-                      title={sess.title}
+                      title={isEditing ? undefined : sess.title}
                     >
                       <span style={{ ...styles.historyItemIcon, color: isActive ? 'var(--accent-blue-text)' : 'var(--text-secondary)', display: 'flex' }}>
                         <MessageSquare size={13} />
                       </span>
-                      <span style={styles.historyItemText}>{sess.title}</span>
-                      <button
-                        onClick={(e) => handleDeleteSession(e, sess.id)}
-                        style={styles.historyDeleteBtn}
-                        title="Hapus percakapan ini"
-                      >
-                        <Trash2 size={12} />
-                      </button>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editTitleValue}
+                          onChange={(e) => setEditTitleValue(e.target.value)}
+                          onBlur={() => handleSaveRename(sess.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSaveRename(sess.id)
+                            if (e.key === 'Escape') {
+                              setEditingSessionId(null)
+                              setEditTitleValue('')
+                            }
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          autoFocus
+                          onFocus={(e) => e.target.select()}
+                          style={{
+                            flex: 1,
+                            backgroundColor: 'var(--bg-main)',
+                            color: 'var(--text-primary)',
+                            border: '1px solid #3b82f6',
+                            borderRadius: '6px',
+                            padding: '4px 8px',
+                            fontSize: '13px',
+                            outline: 'none',
+                            width: '100%'
+                          }}
+                        />
+                      ) : (
+                        <>
+                          <span
+                            style={{
+                              ...styles.historyItemText,
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => handleSelectSession(sess.id)}
+                          >
+                            {sess.title}
+                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setEditingSessionId(sess.id)
+                                setEditTitleValue(sess.title)
+                              }}
+                              style={styles.historyActionBtn}
+                              title="Ganti Nama Chat"
+                            >
+                              <Pencil size={12} />
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteSession(e, sess.id)}
+                              style={styles.historyDeleteBtn}
+                              title="Hapus percakapan ini"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   )
                 })
@@ -2248,6 +2318,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
+  },
+  historyActionBtn: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: 'var(--text-secondary)',
+    fontSize: '11px',
+    cursor: 'pointer',
+    padding: '2px 4px',
+    borderRadius: '4px',
+    opacity: 0.7,
+    transition: 'opacity 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   historyDeleteBtn: {
     backgroundColor: 'transparent',
