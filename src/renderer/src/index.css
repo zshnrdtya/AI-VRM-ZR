@@ -203,3 +203,35 @@ button {
     transform: rotate(360deg);
   }
 }
+
+/* Markdown Table Styling (GitHub Flavored Markdown) */
+.markdown-body table,
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  overflow-x: auto;
+  display: block; /* Agar bisa di-scroll horizontal di mobile */
+}
+
+.markdown-body th, 
+.markdown-body td,
+table th,
+table td {
+  border: 1px solid var(--border-color, #475569);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.markdown-body th,
+table th {
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.1));
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.markdown-body td,
+table td {
+  color: var(--text-secondary);
+}
+
