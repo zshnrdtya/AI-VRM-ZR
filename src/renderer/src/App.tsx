@@ -55,6 +55,7 @@ export default function App() {
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null)
   const [editTitleValue, setEditTitleValue] = useState('')
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     // Mulai efek pudar setelah 2 detik
@@ -217,13 +218,23 @@ export default function App() {
     }
   }
 
-  const handleDeleteSession = async (e: React.MouseEvent, sessionId: string) => {
+  const handleDeleteSession = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation()
-    if (confirm('Hapus sesi percakapan ini?')) {
-      await db.messages.where('sessionId').equals(sessionId).delete()
-      await db.sessions.delete(sessionId)
-      if (activeSessionId === sessionId) {
-        handleStartNewChat()
+    setSessionToDelete(sessionId)
+  }
+
+  const confirmDeleteSession = async () => {
+    if (sessionToDelete) {
+      try {
+        await db.messages.where('sessionId').equals(sessionToDelete).delete()
+        await db.sessions.delete(sessionToDelete)
+        if (activeSessionId === sessionToDelete) {
+          handleStartNewChat()
+        }
+      } catch (err) {
+        console.error('[Zeera DB] Gagal menghapus sesi:', err)
+      } finally {
+        setSessionToDelete(null)
       }
     }
   }
@@ -2059,6 +2070,79 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
           </div>
         </div>
       </div>
+
+      {/* Custom Delete Confirmation Modal */}
+      {sessionToDelete && (
+        <div
+          onClick={() => setSessionToDelete(null)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+            backdropFilter: 'blur(4px)'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '90%',
+              maxWidth: '350px',
+              boxShadow: 'var(--card-shadow, 0 10px 25px rgba(0,0,0,0.2))',
+              textAlign: 'center'
+            }}
+          >
+            <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-primary)', fontSize: '18px' }}>
+              Konfirmasi Hapus
+            </h3>
+            <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.5' }}>
+              Yakin chat sama zeera mau di hapus?
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setSessionToDelete(null)}
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'transparent',
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDeleteSession}
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
