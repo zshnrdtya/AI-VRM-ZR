@@ -26,12 +26,12 @@ interface ChatModeProps {
   onCreateNewSession: () => void
 }
 
-// Model prioritas untuk text chat (gemini-3.1-flash-lite sangat cepat dan stabil)
-const TEXT_MODELS = [
-  'gemini-3.1-flash-lite',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash-lite',
-  'gemini-flash-lite-latest'
+// Daftar model AI Gemini dengan pemetaan nama kustom Zeera AI
+export const AI_MODELS = [
+  { id: 'gemini-3.1-flash-lite', name: 'Zeera AI 1.1' },
+  { id: 'gemini-3.6-flash', name: 'Zeera AI 1.2' },
+  { id: 'gemini-3.5-flash-lite', name: 'Zeera AI 1.3' },
+  { id: 'gemini-flash-lite-latest', name: 'Zeera AI 1.4' }
 ]
 
 /**
@@ -83,6 +83,15 @@ export const ChatMode: React.FC<ChatModeProps> = ({
   onCreateNewSession
 }) => {
   const [inputMessage, setInputMessage] = useState('')
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('zeera_chat_model')
+      if (saved && AI_MODELS.some((m) => m.id === saved)) {
+        return saved
+      }
+    }
+    return AI_MODELS[0].id
+  })
   const [isLoading, setIsLoading] = useState(false)
   const [streamingText, setStreamingText] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -191,8 +200,14 @@ export const ChatMode: React.FC<ChatModeProps> = ({
         return true
       })
 
-      // Loop coba model-model teks terbaik dengan streaming
-      for (const modelName of TEXT_MODELS) {
+      // Prioritaskan model yang dipilih pengguna di Model Selector, dengan fallback otomatis jika terjadi kendala
+      const candidateModels = [
+        selectedModel,
+        ...AI_MODELS.map((m) => m.id).filter((id) => id !== selectedModel)
+      ]
+
+      // Loop coba model terpilih terlebih dahulu, lalu fallback ke varian model lainnya
+      for (const modelName of candidateModels) {
         try {
           const model = genAI.getGenerativeModel({
             model: modelName,
@@ -919,6 +934,44 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
             rows={1}
             disabled={isLoading}
           />
+          <select
+            value={selectedModel}
+            onChange={(e) => {
+              setSelectedModel(e.target.value)
+              localStorage.setItem('zeera_chat_model', e.target.value)
+            }}
+            disabled={isLoading}
+            style={{
+              padding: isMobile ? '7px 8px' : '8px 12px',
+              borderRadius: isMobile ? '8px' : '10px',
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              fontSize: isMobile ? '12px' : '13.5px',
+              fontWeight: 500,
+              flexShrink: 0,
+              marginRight: isMobile ? '4px' : '8px',
+              transition: 'all 0.2s ease',
+              boxShadow: 'var(--card-shadow)'
+            }}
+            title="Pilih Model AI"
+            aria-label="Pilih Model AI"
+          >
+            {AI_MODELS.map((m) => (
+              <option
+                key={m.id}
+                value={m.id}
+                style={{
+                  backgroundColor: 'var(--bg-card-solid)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                {m.name}
+              </option>
+            ))}
+          </select>
           <button
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isLoading}
