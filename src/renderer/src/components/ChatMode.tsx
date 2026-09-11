@@ -99,6 +99,7 @@ export const ChatMode: React.FC<ChatModeProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const modelDropdownRef = useRef<HTMLDivElement>(null)
 
   // Menyesuaikan tinggi textarea secara dinamis sesuai teks
@@ -333,25 +334,31 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
     }
   }
 
-  // Hapus seluruh sesi ini dari database
-  const handleDeleteCurrentChat = async () => {
+  // Buka modal konfirmasi hapus seluruh sesi ini dari database
+  const handleDeleteCurrentChat = () => {
     if (!activeSessionId) return
-    if (confirm('Hapus percakapan ini secara permanen?')) {
-      try {
-        await db.messages.where('sessionId').equals(activeSessionId).delete()
-        await db.sessions.delete(activeSessionId)
-        conversationHistoryRef.current = []
+    setShowDeleteModal(true)
+  }
 
-        // Beralih ke sesi lain yang tersedia, atau buat sesi baru
-        const remaining = await db.sessions.orderBy('updatedAt').reverse().first()
-        if (remaining) {
-          onSessionChange(remaining.id)
-        } else {
-          onCreateNewSession()
-        }
-      } catch (err) {
-        console.error('[Zeera DB] Gagal menghapus sesi:', err)
+  // Eksekusi penghapusan seluruh sesi ini dari database setelah dikonfirmasi
+  const confirmDeleteCurrentChat = async () => {
+    if (!activeSessionId) return
+    try {
+      await db.messages.where('sessionId').equals(activeSessionId).delete()
+      await db.sessions.delete(activeSessionId)
+      conversationHistoryRef.current = []
+
+      // Beralih ke sesi lain yang tersedia, atau buat sesi baru
+      const remaining = await db.sessions.orderBy('updatedAt').reverse().first()
+      if (remaining) {
+        onSessionChange(remaining.id)
+      } else {
+        onCreateNewSession()
       }
+    } catch (err) {
+      console.error('[Zeera DB] Gagal menghapus sesi:', err)
+    } finally {
+      setShowDeleteModal(false)
     }
   }
 
@@ -1119,6 +1126,79 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
           </button>
         </div>
       </footer>
+
+      {/* Custom Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div
+          onClick={() => setShowDeleteModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+            backdropFilter: 'blur(4px)'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '90%',
+              maxWidth: '350px',
+              boxShadow: 'var(--card-shadow, 0 10px 25px rgba(0,0,0,0.2))',
+              textAlign: 'center'
+            }}
+          >
+            <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-primary)', fontSize: '18px' }}>
+              Konfirmasi Hapus
+            </h3>
+            <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.5' }}>
+              Yakin chat sama zeera mau di hapus?
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'transparent',
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDeleteCurrentChat}
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
