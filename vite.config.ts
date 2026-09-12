@@ -38,11 +38,35 @@ function edgeTTSPlugin(env: Record<string, string>): Plugin {
   }
 }
 
+function xkiroChatPlugin(env: Record<string, string>): Plugin {
+  return {
+    name: 'vite-plugin-xkiro-chat',
+    configureServer(server) {
+      server.middlewares.use('/api/xkiro-chat', async (req: any, res: any) => {
+        try {
+          process.env.VITE_XKIRO_API_KEY = env.VITE_XKIRO_API_KEY || process.env.VITE_XKIRO_API_KEY || ''
+          process.env.XKIRO_API_KEY = env.XKIRO_API_KEY || process.env.XKIRO_API_KEY || ''
+          // @ts-ignore
+          const handler = (await import('./api/xkiro-chat.js')).default
+          await handler(req, res)
+        } catch (err: any) {
+          console.error('[Vite xKiro Proxy Error]:', err)
+          if (!res.headersSent) {
+            res.statusCode = 500
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: err.message || 'Proxy Error' }))
+          }
+        }
+      })
+    }
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react(), edgeTTSPlugin(env)],
+    plugins: [react(), edgeTTSPlugin(env), xkiroChatPlugin(env)],
     assetsInclude: ['**/*.vrm'],
     resolve: {
       alias: {
