@@ -273,14 +273,8 @@ export const ChatMode: React.FC<ChatModeProps> = ({
         })
 
         if (!response.ok) {
-          let errDetail = ''
-          try {
-            const errJson = await response.json()
-            errDetail = errJson.error || ''
-          } catch {
-            // ignore
-          }
-          throw new Error(errDetail || `Server proxy error: ${response.status} ${response.statusText}`)
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || `HTTP Error ${response.status}`)
         }
 
         // 3. Tangani streaming response chunk dari proxy Vercel
@@ -394,12 +388,16 @@ export const ChatMode: React.FC<ChatModeProps> = ({
       const rawErrMsg = (err?.message || String(err || '')).toLowerCase()
       let errorDetail = 'Waduh, sepertinya sedang ada kendala jaringan atau sistem. Coba kirim ulang pesanmu ya!'
 
-      if (rawErrMsg.includes('belum dikonfigurasi')) {
+      if (rawErrMsg.includes('capacity')) {
+        errorDetail = 'Maaf, server AI model ini sedang penuh (At Capacity). Silakan coba beberapa saat lagi atau ganti ke model Zeera AI (Gemini) di pemilih model ya! 🙏'
+      } else if (rawErrMsg.includes('belum dikonfigurasi')) {
         errorDetail = err.message
-      } else if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand')) {
+      } else if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand') || rawErrMsg.includes('overloaded')) {
         errorDetail = 'Maaf ya, server Zeera saat ini sedang sangat penuh atau sedang dalam perbaikan. Coba sapa aku lagi beberapa menit ke depan ya! 🙏'
       } else if (rawErrMsg.includes('api_key') || rawErrMsg.includes('401') || rawErrMsg.includes('403')) {
         errorDetail = 'Sepertinya ada kendala pada kunci akses API (API Key). Mohon periksa kembali pengaturannya.'
+      } else if (err?.message) {
+        errorDetail = `Error sistem: ${err.message}`
       }
 
       await db.messages.add({
