@@ -67,13 +67,14 @@ export default async function handler(req, res) {
     res.end()
   } catch (error) {
     console.error('API Error:', error)
+    const errorMessage = error?.message || 'Terjadi kesalahan pada server proxy'
     if (!res.headersSent) {
       if (typeof res.status === 'function') {
-        res.status(500).json({ error: 'Terjadi kesalahan pada server proxy' })
+        res.status(500).json({ error: errorMessage })
       } else {
         res.statusCode = 500
         res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ error: 'Terjadi kesalahan pada server proxy' }))
+        res.end(JSON.stringify({ error: errorMessage }))
       }
     }
   }
