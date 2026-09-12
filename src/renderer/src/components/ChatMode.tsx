@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import OpenAI from 'openai'
 import { useLiveQuery } from 'dexie-react-hooks'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -19,13 +18,6 @@ import {
   Check,
   ChevronDown
 } from 'lucide-react'
-
-// Inisialisasi Client xKiro (OpenAI SDK) untuk Multi-Provider LLM
-const xkiroClient = new OpenAI({
-  baseURL: 'https://api.xkiro.com/v1',
-  apiKey: import.meta.env.VITE_XKIRO_API_KEY || 'sk-xt-f04df9308330689bcff3cd305875c63623bfed78d5da4739',
-  dangerouslyAllowBrowser: true
-})
 
 // Instruksi Sistem Karakter Zeera AI
 const ZEERA_SYSTEM_INSTRUCTION = `Kamu adalah Zeera AI, asisten virtual cerdas, ramah, dan solutif.
@@ -246,17 +238,17 @@ export const ChatMode: React.FC<ChatModeProps> = ({
       let aiReply = ''
 
       if (selectedModel.startsWith('qwen') || selectedModel.includes('qwen')) {
-        // --- LOGIKA API XKIRO (OPENAI FORMAT) ---
-        // 1. Format riwayat pesan ke bentuk array role/content OpenAI
+        // --- LOGIKA API XKIRO (VIA VERCEL PROXY) ---
+        // 1. Format riwayat pesan ke bentuk array role/content
         const allSessionMsgs = await db.messages.where('sessionId').equals(activeSessionId).toArray()
         const sortedHistory = allSessionMsgs.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
         const cleanHistory = sortedHistory.filter((m) => !m.id.startsWith('err_') && m.text.trim())
         const recentHistory = cleanHistory.slice(-20)
 
-        const formattedMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+        const formattedMessages = [
           { role: 'system', content: ZEERA_SYSTEM_INSTRUCTION },
           ...recentHistory.map((m) => ({
-            role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+            role: m.role === 'user' ? 'user' : 'assistant',
             content: m.text
           }))
         ]
@@ -270,24 +262,60 @@ export const ChatMode: React.FC<ChatModeProps> = ({
           formattedMessages.push({ role: 'user', content: text })
         }
 
-        // 2. Lakukan request streaming ke xKiro
-        const stream = await xkiroClient.chat.completions.create({
-          model: selectedModel,
-          messages: formattedMessages,
-          stream: true
+        // 2. Lakukan request streaming ke proxy backend Vercel
+        const response = await fetch('/api/xkiro-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: formattedMessages,
+            model: selectedModel
+          })
         })
 
-        // 3. Tangani streaming response chunk dari xKiro
+        if (!response.ok) {
+          let errDetail = ''
+          try {
+            const errJson = await response.json()
+            errDetail = errJson.error || ''
+          } catch {
+            // ignore
+          }
+          throw new Error(errDetail || `Server proxy error: ${response.status} ${response.statusText}`)
+        }
+
+        // 3. Tangani streaming response chunk dari proxy Vercel
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder('utf-8')
         let fullText = ''
-        for await (const chunk of stream) {
-          const content = chunk.choices[0]?.delta?.content || ''
-          fullText += content
-          setStreamingText(fullText)
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+
+            const chunkString = decoder.decode(value, { stream: true })
+            const lines = chunkString.split('\n')
+
+            for (const line of lines) {
+              const trimmedLine = line.trim()
+              if (trimmedLine.startsWith('data: ') && trimmedLine !== 'data: [DONE]') {
+                try {
+                  const data = JSON.parse(trimmedLine.replace('data: ', ''))
+                  if (data.text) {
+                    fullText += data.text
+                    setStreamingText(fullText)
+                  }
+                } catch (e) {
+                  console.error('[Zeera Proxy] Error parsing stream chunk:', e)
+                }
+              }
+            }
+          }
         }
 
         aiReply = fullText.trim()
         if (!aiReply) {
-          throw new Error('Tidak ada respon yang diterima dari server xKiro (Qwen).')
+          throw new Error('Tidak ada respon yang diterima dari server proxy xKiro (Qwen).')
         }
       } else {
         // --- LOGIKA API GEMINI (Eksisting) ---
