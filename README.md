@@ -62,12 +62,13 @@ Logo **Zeera** dirancang sebagai representasi visual dari kecerdasan buatan masa
 - **Animasi Pulse Halus**: Logo Zeera dan tipografi *ZEERA AI* berdetak secara elegan dengan transisi pudar (*fade-out*) mulus setelah 2 detik.
 - **Identitas Pengembang**: Menampilkan keterangan resmi *Developed by Raditya Rai Zeeshan - A Z - Project*.
 
-### 2. 🤖 Multi-Model AI Selector (Custom Pill Dropdown)
-Pengguna dapat memilih varian model kecerdasan buatan secara manual melalui dropdown kustom modern:
+### 2. 🤖 Multi-Provider LLM & Model Selector (Custom Pill Dropdown)
+Pengguna dapat memilih varian model kecerdasan buatan multi-provider secara manual melalui dropdown kustom modern:
 - **Zeera AI 1.1** (`gemini-3.1-flash-lite`): Respon super cepat & latensi minimal.
 - **Zeera AI 1.2** (`gemini-3.6-flash`): Kemampuan penalaran paling cerdas, mendalam, dan komprehensif.
 - **Zeera AI 1.3** (`gemini-3.5-flash-lite`): Keseimbangan logika presisi dan efisiensi komputasi.
 - **Zeera AI 1.4** (`gemini-flash-lite-latest`): Rilis stabil mutakhir dari lini flash-lite.
+- **Zeera AI (Qwen Max)** (`qwen/qwen3.8-max:free`): Model penalaran mutakhir Qwen via provider xKiro (OpenAI SDK streaming).
 - *Pilihan model otomatis tersimpan persisten di `localStorage`.*
 
 ### 3. ✍️ Auto-Expanding Textarea & Bottom Toolbar
@@ -165,9 +166,11 @@ npm install
 ```
 
 ### 3. Konfigurasi Variabel Lingkungan (.env)
-Buat file `.env` di root direktori proyek, lalu masukkan kunci API Google Gemini Anda:
+Buat file `.env` di root direktori proyek, lalu masukkan kunci API Anda (Gemini & xKiro):
 ```env
 VITE_GEMINI_API_KEY=KUNCI_API_GEMINI_ANDA_DI_SINI
+# Opsional: Jika ingin mengganti API Key default xKiro
+VITE_XKIRO_API_KEY=KUNCI_API_XKIRO_ANDA_DI_SINI
 ```
 
 ### 4. Menjalankan Server Pengembangan (Development)
