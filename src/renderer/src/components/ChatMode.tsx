@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
 import { useLiveQuery } from 'dexie-react-hooks'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -19,6 +20,26 @@ import {
   ChevronDown
 } from 'lucide-react'
 
+// Inisialisasi Client xKiro (OpenAI SDK) untuk Multi-Provider LLM
+const xkiroClient = new OpenAI({
+  baseURL: 'https://api.xkiro.com/v1',
+  apiKey: import.meta.env.VITE_XKIRO_API_KEY || 'sk-xt-f04df9308330689bcff3cd305875c63623bfed78d5da4739',
+  dangerouslyAllowBrowser: true
+})
+
+// Instruksi Sistem Karakter Zeera AI
+const ZEERA_SYSTEM_INSTRUCTION = `Kamu adalah Zeera AI, asisten virtual cerdas, ramah, dan solutif.
+Di mode Text Chat ini, jawablah pertanyaan atau obrolan pengguna dengan jelas, runtut, dan informatif layaknya asisten berbasis teks profesional.
+Gunakan bahasa Indonesia yang santai, sopan, bersahabat, dan mudah dipahami.
+Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.
+
+[IDENTITAS DEVELOPER & PENCIPTA]:
+Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan". 
+- Raditya adalah seorang Full-stack Developer dan murid di SMKN 1 Depok, jurusan Pengembangan Perangkat Lunak dan Gim.
+- Dia juga merupakan founder dari Z - Project.
+- Jika pengguna bertanya "Siapa developer kamu?", "Siapa yang membuatmu?", atau "Kamu buatan siapa?", kamu harus menjawab dengan bangga bahwa kamu diciptakan oleh Raditya Rai Zeeshan.
+- Jika pengguna bertanya "Apakah kamu kenal Raditya Rai Zeeshan?", "Siapa itu Raditya?", atau sejenisnya, kamu harus menjawab dengan antusias: "Tentu saja aku kenal! Raditya Rai Zeeshan adalah developer hebat yang menciptakan aku. Dia seorang Full-stack Developer dari SMKN 1 Depok!"`
+
 interface ChatModeProps {
   isMobile: boolean
   onOpenSidebar: () => void
@@ -27,12 +48,13 @@ interface ChatModeProps {
   onCreateNewSession: () => void
 }
 
-// Daftar model AI Gemini dengan pemetaan nama kustom Zeera AI
+// Daftar model AI dengan pemetaan nama kustom Zeera AI (Multi-Provider: Gemini & xKiro Qwen)
 export const AI_MODELS = [
   { id: 'gemini-3.1-flash-lite', name: 'Zeera AI 1.1' },
   { id: 'gemini-3.6-flash', name: 'Zeera AI 1.2' },
   { id: 'gemini-3.5-flash-lite', name: 'Zeera AI 1.3' },
-  { id: 'gemini-flash-lite-latest', name: 'Zeera AI 1.4' }
+  { id: 'gemini-flash-lite-latest', name: 'Zeera AI 1.4' },
+  { id: 'qwen/qwen3.8-max:free', name: 'Zeera AI (Qwen Max)' }
 ]
 
 /**
@@ -220,82 +242,112 @@ export const ChatMode: React.FC<ChatModeProps> = ({
     }
     setIsLoading(true)
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
-    if (!apiKey) {
-      await db.messages.add({
-        id: 'err_' + Date.now(),
-        sessionId: activeSessionId,
-        role: 'assistant',
-        text: '⚠️ Kunci VITE_GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Mohon periksa kembali.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        createdAt: Date.now()
-      })
-      setIsLoading(false)
-      return
-    }
-
     try {
-      const genAI = new GoogleGenerativeAI(apiKey)
       let aiReply = ''
-      let lastError: any = null
 
-      // Pastikan history untuk startChat selalu berpasangan dan pesan terakhir adalah dari 'model'
-      const validHistory = conversationHistoryRef.current.filter((item, idx, arr) => {
-        if (idx === arr.length - 1 && item.role === 'user') return false
-        return true
-      })
+      if (selectedModel.startsWith('qwen') || selectedModel.includes('qwen')) {
+        // --- LOGIKA API XKIRO (OPENAI FORMAT) ---
+        // 1. Format riwayat pesan ke bentuk array role/content OpenAI
+        const allSessionMsgs = await db.messages.where('sessionId').equals(activeSessionId).toArray()
+        const sortedHistory = allSessionMsgs.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+        const cleanHistory = sortedHistory.filter((m) => !m.id.startsWith('err_') && m.text.trim())
+        const recentHistory = cleanHistory.slice(-20)
 
-      // Prioritaskan model yang dipilih pengguna di Model Selector, dengan fallback otomatis jika terjadi kendala
-      const candidateModels = [
-        selectedModel,
-        ...AI_MODELS.map((m) => m.id).filter((id) => id !== selectedModel)
-      ]
+        const formattedMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+          { role: 'system', content: ZEERA_SYSTEM_INSTRUCTION },
+          ...recentHistory.map((m) => ({
+            role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+            content: m.text
+          }))
+        ]
 
-      // Loop coba model terpilih terlebih dahulu, lalu fallback ke varian model lainnya
-      for (const modelName of candidateModels) {
-        try {
-          const model = genAI.getGenerativeModel({
-            model: modelName,
-            systemInstruction: `Kamu adalah Zeera AI, asisten virtual cerdas, ramah, dan solutif.
-Di mode Text Chat ini, jawablah pertanyaan atau obrolan pengguna dengan jelas, runtut, dan informatif layaknya asisten berbasis teks profesional.
-Gunakan bahasa Indonesia yang santai, sopan, bersahabat, dan mudah dipahami.
-Format respon dalam teks biasa atau markdown yang rapi tanpa perlu objek JSON.
+        // Pastikan pesan terakhir adalah pesan pengguna yang baru saja dikirim
+        if (
+          formattedMessages.length === 1 ||
+          formattedMessages[formattedMessages.length - 1].role !== 'user' ||
+          formattedMessages[formattedMessages.length - 1].content !== text
+        ) {
+          formattedMessages.push({ role: 'user', content: text })
+        }
 
-[IDENTITAS DEVELOPER & PENCIPTA]:
-Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan". 
-- Raditya adalah seorang Full-stack Developer dan murid di SMKN 1 Depok, jurusan Pengembangan Perangkat Lunak dan Gim.
-- Dia juga merupakan founder dari Z - Project.
-- Jika pengguna bertanya "Siapa developer kamu?", "Siapa yang membuatmu?", atau "Kamu buatan siapa?", kamu harus menjawab dengan bangga bahwa kamu diciptakan oleh Raditya Rai Zeeshan.
-- Jika pengguna bertanya "Apakah kamu kenal Raditya Rai Zeeshan?", "Siapa itu Raditya?", atau sejenisnya, kamu harus menjawab dengan antusias: "Tentu saja aku kenal! Raditya Rai Zeeshan adalah developer hebat yang menciptakan aku. Dia seorang Full-stack Developer dari SMKN 1 Depok!"`
-          })
+        // 2. Lakukan request streaming ke xKiro
+        const stream = await xkiroClient.chat.completions.create({
+          model: selectedModel,
+          messages: formattedMessages,
+          stream: true
+        })
 
-          const chatSession = model.startChat({
-            history: validHistory
-          })
+        // 3. Tangani streaming response chunk dari xKiro
+        let fullText = ''
+        for await (const chunk of stream) {
+          const content = chunk.choices[0]?.delta?.content || ''
+          fullText += content
+          setStreamingText(fullText)
+        }
 
-          const result = await chatSession.sendMessageStream(text)
-          let fullText = ''
+        aiReply = fullText.trim()
+        if (!aiReply) {
+          throw new Error('Tidak ada respon yang diterima dari server xKiro (Qwen).')
+        }
+      } else {
+        // --- LOGIKA API GEMINI (Eksisting) ---
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
+        if (!apiKey) {
+          throw new Error('⚠️ Kunci VITE_GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Mohon periksa kembali.')
+        }
 
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text()
-            fullText += chunkText
-            setStreamingText(fullText)
+        const genAI = new GoogleGenerativeAI(apiKey)
+        let lastError: any = null
+
+        // Pastikan history untuk startChat selalu berpasangan dan pesan terakhir adalah dari 'model'
+        const validHistory = conversationHistoryRef.current.filter((item, idx, arr) => {
+          if (idx === arr.length - 1 && item.role === 'user') return false
+          return true
+        })
+
+        // Filter kandidat model khusus Gemini (abaikan non-Gemini seperti Qwen)
+        const geminiModels = AI_MODELS.map((m) => m.id).filter((id) => !id.startsWith('qwen'))
+        const candidateModels = [
+          selectedModel,
+          ...geminiModels.filter((id) => id !== selectedModel)
+        ]
+
+        // Loop coba model terpilih terlebih dahulu, lalu fallback ke varian model lainnya
+        for (const modelName of candidateModels) {
+          try {
+            const model = genAI.getGenerativeModel({
+              model: modelName,
+              systemInstruction: ZEERA_SYSTEM_INSTRUCTION
+            })
+
+            const chatSession = model.startChat({
+              history: validHistory
+            })
+
+            const result = await chatSession.sendMessageStream(text)
+            let fullText = ''
+
+            for await (const chunk of result.stream) {
+              const chunkText = chunk.text()
+              fullText += chunkText
+              setStreamingText(fullText)
+            }
+
+            aiReply = fullText.trim()
+            if (aiReply) break
+          } catch (err: any) {
+            console.warn(`[Zeera Chat] Model ${modelName} kendala, mencoba fallback:`, err.message || err)
+            lastError = err
+            setStreamingText('')
           }
+        }
 
-          aiReply = fullText.trim()
-          if (aiReply) break
-        } catch (err: any) {
-          console.warn(`[Zeera Chat] Model ${modelName} kendala, mencoba fallback:`, err.message || err)
-          lastError = err
-          setStreamingText('')
+        if (!aiReply) {
+          throw lastError || new Error('Gagal mendapatkan respon dari server Gemini.')
         }
       }
 
-      if (!aiReply) {
-        throw lastError || new Error('Gagal mendapatkan respon dari server Gemini.')
-      }
-
-      // 2. Simpan balasan AI ke IndexedDB setelah selesai streaming
+      // 4. Simpan balasan AI ke IndexedDB setelah selesai streaming
       const aiNow = Date.now()
       await db.messages.add({
         id: 'ai_' + aiNow + '_' + Math.random().toString(36).substring(2, 7),
@@ -314,9 +366,11 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
       const rawErrMsg = (err?.message || String(err || '')).toLowerCase()
       let errorDetail = 'Waduh, sepertinya sedang ada kendala jaringan atau sistem. Coba kirim ulang pesanmu ya!'
 
-      if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand')) {
+      if (rawErrMsg.includes('belum dikonfigurasi')) {
+        errorDetail = err.message
+      } else if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand')) {
         errorDetail = 'Maaf ya, server Zeera saat ini sedang sangat penuh atau sedang dalam perbaikan. Coba sapa aku lagi beberapa menit ke depan ya! 🙏'
-      } else if (rawErrMsg.includes('api_key_invalid') || rawErrMsg.includes('403')) {
+      } else if (rawErrMsg.includes('api_key') || rawErrMsg.includes('401') || rawErrMsg.includes('403')) {
         errorDetail = 'Sepertinya ada kendala pada kunci akses API (API Key). Mohon periksa kembali pengaturannya.'
       }
 
