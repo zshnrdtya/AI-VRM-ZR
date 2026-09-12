@@ -40,13 +40,12 @@ interface ChatModeProps {
   onCreateNewSession: () => void
 }
 
-// Daftar model AI dengan pemetaan nama kustom Zeera AI (Multi-Provider: Gemini & xKiro Qwen)
+// Daftar model AI Gemini dengan pemetaan nama kustom Zeera AI
 export const AI_MODELS = [
   { id: 'gemini-3.1-flash-lite', name: 'Zeera AI 1.1' },
   { id: 'gemini-3.6-flash', name: 'Zeera AI 1.2' },
   { id: 'gemini-3.5-flash-lite', name: 'Zeera AI 1.3' },
-  { id: 'gemini-flash-lite-latest', name: 'Zeera AI 1.4' },
-  { id: 'qwen/qwen3.8-max:free', name: 'Zeera AI (Qwen Max)' }
+  { id: 'gemini-flash-lite-latest', name: 'Zeera AI 1.4' }
 ]
 
 /**
@@ -234,142 +233,72 @@ export const ChatMode: React.FC<ChatModeProps> = ({
     }
     setIsLoading(true)
 
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
+    if (!apiKey) {
+      await db.messages.add({
+        id: 'err_' + Date.now(),
+        sessionId: activeSessionId,
+        role: 'assistant',
+        text: '⚠️ Kunci VITE_GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Mohon periksa kembali.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: Date.now()
+      })
+      setIsLoading(false)
+      return
+    }
+
     try {
+      const genAI = new GoogleGenerativeAI(apiKey)
       let aiReply = ''
+      let lastError: any = null
 
-      if (selectedModel.startsWith('qwen') || selectedModel.includes('qwen')) {
-        // --- LOGIKA API XKIRO (VIA VERCEL PROXY) ---
-        // 1. Format riwayat pesan ke bentuk array role/content
-        const allSessionMsgs = await db.messages.where('sessionId').equals(activeSessionId).toArray()
-        const sortedHistory = allSessionMsgs.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
-        const cleanHistory = sortedHistory.filter((m) => !m.id.startsWith('err_') && m.text.trim())
-        const recentHistory = cleanHistory.slice(-20)
+      // Pastikan history untuk startChat selalu berpasangan dan pesan terakhir adalah dari 'model'
+      const validHistory = conversationHistoryRef.current.filter((item, idx, arr) => {
+        if (idx === arr.length - 1 && item.role === 'user') return false
+        return true
+      })
 
-        const formattedMessages = [
-          { role: 'system', content: ZEERA_SYSTEM_INSTRUCTION },
-          ...recentHistory.map((m) => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.text
-          }))
-        ]
+      // Prioritaskan model yang dipilih pengguna di Model Selector, dengan fallback otomatis jika terjadi kendala
+      const candidateModels = [
+        selectedModel,
+        ...AI_MODELS.map((m) => m.id).filter((id) => id !== selectedModel)
+      ]
 
-        // Pastikan pesan terakhir adalah pesan pengguna yang baru saja dikirim
-        if (
-          formattedMessages.length === 1 ||
-          formattedMessages[formattedMessages.length - 1].role !== 'user' ||
-          formattedMessages[formattedMessages.length - 1].content !== text
-        ) {
-          formattedMessages.push({ role: 'user', content: text })
-        }
-
-        // 2. Lakukan request streaming ke proxy backend Vercel
-        const response = await fetch('/api/xkiro-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: formattedMessages,
-            model: selectedModel
+      // Loop coba model terpilih terlebih dahulu, lalu fallback ke varian model lainnya
+      for (const modelName of candidateModels) {
+        try {
+          const model = genAI.getGenerativeModel({
+            model: modelName,
+            systemInstruction: ZEERA_SYSTEM_INSTRUCTION
           })
-        })
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}))
-          throw new Error(errorData.error || `HTTP Error ${response.status}`)
-        }
+          const chatSession = model.startChat({
+            history: validHistory
+          })
 
-        // 3. Tangani streaming response chunk dari proxy Vercel
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder('utf-8')
-        let fullText = ''
+          const result = await chatSession.sendMessageStream(text)
+          let fullText = ''
 
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-
-            const chunkString = decoder.decode(value, { stream: true })
-            const lines = chunkString.split('\n')
-
-            for (const line of lines) {
-              const trimmedLine = line.trim()
-              if (trimmedLine.startsWith('data: ') && trimmedLine !== 'data: [DONE]') {
-                try {
-                  const data = JSON.parse(trimmedLine.replace('data: ', ''))
-                  if (data.text) {
-                    fullText += data.text
-                    setStreamingText(fullText)
-                  }
-                } catch (e) {
-                  console.error('[Zeera Proxy] Error parsing stream chunk:', e)
-                }
-              }
-            }
+          for await (const chunk of result.stream) {
+            const chunkText = chunk.text()
+            fullText += chunkText
+            setStreamingText(fullText)
           }
-        }
 
-        aiReply = fullText.trim()
-        if (!aiReply) {
-          throw new Error('Tidak ada respon yang diterima dari server proxy xKiro (Qwen).')
-        }
-      } else {
-        // --- LOGIKA API GEMINI (Eksisting) ---
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || ''
-        if (!apiKey) {
-          throw new Error('⚠️ Kunci VITE_GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Mohon periksa kembali.')
-        }
-
-        const genAI = new GoogleGenerativeAI(apiKey)
-        let lastError: any = null
-
-        // Pastikan history untuk startChat selalu berpasangan dan pesan terakhir adalah dari 'model'
-        const validHistory = conversationHistoryRef.current.filter((item, idx, arr) => {
-          if (idx === arr.length - 1 && item.role === 'user') return false
-          return true
-        })
-
-        // Filter kandidat model khusus Gemini (abaikan non-Gemini seperti Qwen)
-        const geminiModels = AI_MODELS.map((m) => m.id).filter((id) => !id.startsWith('qwen'))
-        const candidateModels = [
-          selectedModel,
-          ...geminiModels.filter((id) => id !== selectedModel)
-        ]
-
-        // Loop coba model terpilih terlebih dahulu, lalu fallback ke varian model lainnya
-        for (const modelName of candidateModels) {
-          try {
-            const model = genAI.getGenerativeModel({
-              model: modelName,
-              systemInstruction: ZEERA_SYSTEM_INSTRUCTION
-            })
-
-            const chatSession = model.startChat({
-              history: validHistory
-            })
-
-            const result = await chatSession.sendMessageStream(text)
-            let fullText = ''
-
-            for await (const chunk of result.stream) {
-              const chunkText = chunk.text()
-              fullText += chunkText
-              setStreamingText(fullText)
-            }
-
-            aiReply = fullText.trim()
-            if (aiReply) break
-          } catch (err: any) {
-            console.warn(`[Zeera Chat] Model ${modelName} kendala, mencoba fallback:`, err.message || err)
-            lastError = err
-            setStreamingText('')
-          }
-        }
-
-        if (!aiReply) {
-          throw lastError || new Error('Gagal mendapatkan respon dari server Gemini.')
+          aiReply = fullText.trim()
+          if (aiReply) break
+        } catch (err: any) {
+          console.warn(`[Zeera Chat] Model ${modelName} kendala, mencoba fallback:`, err.message || err)
+          lastError = err
+          setStreamingText('')
         }
       }
 
-      // 4. Simpan balasan AI ke IndexedDB setelah selesai streaming
+      if (!aiReply) {
+        throw lastError || new Error('Gagal mendapatkan respon dari server Gemini.')
+      }
+
+      // 2. Simpan balasan AI ke IndexedDB setelah selesai streaming
       const aiNow = Date.now()
       await db.messages.add({
         id: 'ai_' + aiNow + '_' + Math.random().toString(36).substring(2, 7),
@@ -388,16 +317,10 @@ export const ChatMode: React.FC<ChatModeProps> = ({
       const rawErrMsg = (err?.message || String(err || '')).toLowerCase()
       let errorDetail = 'Waduh, sepertinya sedang ada kendala jaringan atau sistem. Coba kirim ulang pesanmu ya!'
 
-      if (rawErrMsg.includes('capacity')) {
-        errorDetail = 'Maaf, server AI model ini sedang penuh (At Capacity). Silakan coba beberapa saat lagi atau ganti ke model Zeera AI (Gemini) di pemilih model ya! 🙏'
-      } else if (rawErrMsg.includes('belum dikonfigurasi')) {
-        errorDetail = err.message
-      } else if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand') || rawErrMsg.includes('overloaded')) {
+      if (rawErrMsg.includes('503') || rawErrMsg.includes('unavailable') || rawErrMsg.includes('high demand')) {
         errorDetail = 'Maaf ya, server Zeera saat ini sedang sangat penuh atau sedang dalam perbaikan. Coba sapa aku lagi beberapa menit ke depan ya! 🙏'
       } else if (rawErrMsg.includes('api_key') || rawErrMsg.includes('401') || rawErrMsg.includes('403')) {
         errorDetail = 'Sepertinya ada kendala pada kunci akses API (API Key). Mohon periksa kembali pengaturannya.'
-      } else if (err?.message) {
-        errorDetail = `Error sistem: ${err.message}`
       }
 
       await db.messages.add({
