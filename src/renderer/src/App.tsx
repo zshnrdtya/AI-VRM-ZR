@@ -1920,7 +1920,8 @@ Kamu (Zeera) diciptakan dan dikembangkan oleh "Raditya Rai Zeeshan".
                             • <strong>Zeera AI 1.1</strong> (<em>gemini-3.1-flash-lite</em>): Respon cepat & latensi sangat minim.<br />
                             • <strong>Zeera AI 1.2</strong> (<em>gemini-3.6-flash</em>): Kemampuan penalaran paling cerdas & komprehensif.<br />
                             • <strong>Zeera AI 1.3</strong> (<em>gemini-3.5-flash-lite</em>): Keseimbangan akurasi logika dan efisiensi.<br />
-                            • <strong>Zeera AI 1.4</strong> (<em>gemini-flash-lite-latest</em>): Rilis stabil mutakhir varian flash-lite.
+                            • <strong>Zeera AI 1.4</strong> (<em>gemini-flash-lite-latest</em>): Rilis stabil mutakhir varian flash-lite.<br />
+                            • <strong>Zeera AI (Qwen Max)</strong> (<em>qwen/qwen3.8-max:free</em>): Model mutakhir Qwen via provider xKiro.
                           </div>
                           Pilihan model otomatis tersimpan di <code>localStorage</code> sehingga selalu aktif saat kembali.
                         </li>
