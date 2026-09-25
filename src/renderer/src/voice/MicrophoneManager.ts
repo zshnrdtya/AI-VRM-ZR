@@ -1,7 +1,4 @@
-// ============================================================
-// Microphone Manager — Record user voice
-// Implements VOIC-1
-// ============================================================
+// Microphone Manager: Records user voice input via MediaRecorder and delivers audio buffers
 
 export class MicrophoneManager {
   private mediaRecorder: MediaRecorder | null = null
