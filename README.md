@@ -1,11 +1,11 @@
-# ✨ Zeera - AI Avatar 3D Web Assistant
+# Zeera - AI Avatar 3D Web Assistant
 
 <p align="center">
-  <img src="logo-zeera.jpeg" alt="Zeera Logo" width="130" style="border-radius: 24px; box-shadow: 0 8px 32px rgba(59, 130, 246, 0.35);" />
+  <img src="public/logo-zeera.jpeg" alt="Zeera Logo" width="130" style="border-radius: 24px; box-shadow: 0 8px 32px rgba(59, 130, 246, 0.35);" />
 </p>
 
 <p align="center">
-  <b>Asisten Virtual Web Cerdas Berbasis Avatar 3D Interaktif & Text Chat Multi-Model Real-Time</b>
+  <b>Asisten Virtual Web Berbasis Avatar 3D Interaktif & Text Chat Multi-Model</b>
 </p>
 
 <p align="center">
@@ -20,42 +20,42 @@
 </p>
 
 <p align="center">
-  <img src="logo-zeera16-9.jpg" alt="Zeera 16:9 Showcase Banner" width="100%" style="border-radius: 14px; box-shadow: 0 8px 28px rgba(0,0,0,0.3);" />
+  <img src="public/logo-zeera16-9.jpg" alt="Zeera 16:9 Showcase Banner" width="100%" style="border-radius: 14px; box-shadow: 0 8px 28px rgba(0,0,0,0.3);" />
 </p>
 
 ---
 
-## 📖 Tentang Proyek
+## Tentang Proyek
 
-**Zeera** adalah platform asisten virtual berbasis web generasi masa depan yang menggabungkan kecerdasan buatan multi-model (**Google Gemini AI**) dengan representasi visual **Avatar 3D Anime Interaktif (.VRM)** serta ekosistem obrolan teks modern berbasis *local-first*.
+**Zeera** adalah aplikasi asisten virtual berbasis web yang memadukan model kecerdasan buatan (**Google Gemini AI**) dengan representasi visual **Avatar 3D Anime Interaktif (.VRM)** serta antarmuka obrolan teks berbasis *local-first*.
 
-Aplikasi ini dirancang dengan 3 ruang interaksi utama yang terintegrasi mulus tanpa reload:
-1. **Mode AI Asisten Virtual (3D Avatar + Voice & Lip-Sync)**: Pengalaman interaksi tatap muka langsung bersama avatar 3D yang memiliki respirasi alami, kedipan mata otomatis, ekspresi emosional responsif, serta sintesis suara natural *Edge Neural TTS (GadisNeural)* dan sinkronisasi bibir presisi via Web Audio API.
-2. **Mode AI Text Chat (Multi-Model & Local-First)**: Ruang percakapan teks bebas tanpa suara (*silent mode*) layaknya ChatGPT dengan dukungan pemilihan 4 versi model AI, auto-expanding textarea, pemisah tanggal otomatis, salin pesan sekali klik, serta rendering format Markdown kaya dan tabel data GitHub Flavored Markdown (GFM).
-3. **Mode Filosofi & Panduan**: Pusat dokumentasi interaktif yang memuat identitas brand, filosofi visual logo Zeera, tata cara penggunaan lengkap, hingga profil dan portofolio pengembang.
+Aplikasi ini dirancang dengan 3 ruang interaksi utama:
+1. **Mode AI Asisten Virtual (3D Avatar + Voice & Lip-Sync)**: Interaksi tatap muka langsung bersama avatar 3D yang memiliki respirasi, kedipan mata otomatis, ekspresi emosional, serta sintesis suara *Edge Neural TTS (GadisNeural)* dan sinkronisasi bibir via Web Audio API.
+2. **Mode AI Text Chat (Multi-Model & Local-First)**: Ruang percakapan teks tanpa suara dengan dukungan 4 versi model Gemini, auto-expanding textarea, pemisah tanggal otomatis, salin pesan, serta rendering format Markdown dan tabel GitHub Flavored Markdown (GFM).
+3. **Mode Filosofi & Panduan**: Dokumentasi terpadu yang memuat identitas brand, filosofi visual logo Zeera, petunjuk penggunaan, dan profil pengembang.
 
 ---
 
-## 💎 Makna & Filosofi Logo Zeera
+## Makna & Filosofi Logo Zeera
 
-Logo **Zeera** dirancang sebagai representasi visual dari kecerdasan buatan masa depan yang adaptif, berkesinambungan, dan penuh inovasi:
+Logo **Zeera** dirancang sebagai representasi visual dari kecerdasan sistem yang adaptif, terstruktur, dan berkesinambungan:
 
 1. **Bentuk Dasar (Form & Shape)**:
-   - **Inisial Huruf "Z" atau Angka "2"**: Siluet utama melengkung mengalir yang melambangkan fleksibilitas, adaptabilitas, serta pergerakan dinamis mengikuti perkembangan zaman.
-   - **Simbol Infinity ($\infty$)**: Alur pita tanpa ujung bermakna kesinambungan (*sustainability*), pertumbuhan tiada henti (*continuous improvement*), dan potensi kemajuan tanpa batas.
-   - **Struktur Pita 3D Saling Mengunci**: Menandakan sinergi, kolaborasi yang kuat, serta fondasi sistem yang kokoh.
+   - **Inisial Huruf "Z" atau Angka "2"**: Siluet utama melengkung mengalir yang melambangkan fleksibilitas dan adaptabilitas antarmuka.
+   - **Simbol Infinity ($\infty$)**: Alur pita bermakna kesinambungan dan peningkatan sistem secara berkelanjutan.
+   - **Struktur Pita 3D Saling Mengunci**: Menandakan sinergi antar modul komputasi dan kestabilan sistem.
 
 2. **Elemen Geometris & Cahaya (Kanan Atas)**:
-   - **Simpul Jaringan (Network Node) / Rasi Bintang**: Merepresentasikan teknologi, digitalisasi, dan konektivitas global.
-   - **Titik Cahaya (Glowing Dot)**: Titik ungu menyala yang melambangkan "titik terang", puncak pencapaian inovasi, percikan ide, serta penunjuk arah masa depan (*trendsetter*).
+   - **Simpul Jaringan (Network Node)**: Merepresentasikan konektivitas dan pertukaran data multi-model.
+   - **Titik Cahaya (Glowing Dot)**: Titik ungu yang melambangkan fokus eksplorasi dan presisi komputasi.
 
 3. **Filosofi Warna**:
-   - **Ungu (Purple Gradient)**: Melambangkan kreativitas, imajinasi, visi masa depan, kecerdasan tingkat lanjut (AI/cyber), dan kualitas eksklusif.
-   - **Hitam/Abu-abu Gelap**: Efek kedalaman (*depth*), fondasi kuat, profesionalisme, ketegasan, dan stabilitas.
+   - **Ungu**: Melambangkan kreativitas visual dan identitas antarmuka avatar 3D.
+   - **Hitam/Abu-abu Gelap**: Memberikan kedalaman kontras visual, profesionalisme, dan keterbacaan tinggi.
 
 ---
 
-## 🚀 Fitur-Fitur Unggulan Terbaru
+## Fitur Utama
 
 ### 1. 🌅 Animated Welcome Splash Screen
 - **Overlay Pembuka Mewah**: Tampilan layar penuh (*full-screen overlay*) saat aplikasi pertama kali dimuat dengan latar dinamis sesuai tema.
