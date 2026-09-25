@@ -1,6 +1,9 @@
-// ============================================================
-// Audio Player — Play TTS output and provide node for LipSync
-// ============================================================
+// Audio Player: Play TTS audio output and provide Web Audio node for LipSyncController
+
+interface IWindowWithAudioContext {
+  AudioContext?: typeof AudioContext
+  webkitAudioContext?: typeof AudioContext
+}
 
 export class AudioPlayer {
   private audioContext: AudioContext
@@ -10,7 +13,9 @@ export class AudioPlayer {
   private onEndedCallback: (() => void) | null = null
 
   constructor() {
-    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const win = window as unknown as IWindowWithAudioContext
+    const AudioContextClass = win.AudioContext || win.webkitAudioContext || AudioContext
+    this.audioContext = new AudioContextClass()
     this.gainNode = this.audioContext.createGain()
     this.gainNode.connect(this.audioContext.destination)
   }
