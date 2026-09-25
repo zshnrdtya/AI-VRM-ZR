@@ -1,8 +1,4 @@
-// ============================================================
-// Expression Controller — Emotion mapping to VRM expressions
-// Implements EXPR-1, EXPR-2, EXPR-3
-// Maps AI emotion tags to VRM blend shape presets
-// ============================================================
+﻿// Emotion mapping to VRM blend shape presets.
 
 import { VRM } from '@pixiv/three-vrm'
 import { Emotion } from '../../../shared/types'
@@ -33,7 +29,7 @@ export class ExpressionController {
   }
 
   /**
-   * Set the target emotion — will smoothly transition
+   * Set the target emotion : will smoothly transition
    * Implements EXPR-1: Change expression based on AI emotion
    */
   setEmotion(emotion: Emotion): void {
@@ -50,7 +46,7 @@ export class ExpressionController {
     this.setEmotion('neutral')
   }
 
-  /** Update — called each frame for smooth transitions */
+  /** Update : called each frame for smooth transitions */
   update(delta: number): void {
     if (this.transitionProgress >= 1.0) return
 
@@ -85,7 +81,7 @@ export class ExpressionController {
     try {
       this.vrm.expressionManager.setValue(presetName, value)
     } catch {
-      // Expression not found — fallback to neutral (EXPR-3)
+      // Expression not found : fallback to neutral (EXPR-3)
       console.warn(`[ExpressionController] Expression "${presetName}" not found, using neutral`)
     }
   }
