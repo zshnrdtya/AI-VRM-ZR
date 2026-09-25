@@ -1,8 +1,4 @@
-// ============================================================
-// Animation Controller — Procedural idle, talking, blink
-// Implements ANIM-1 to ANIM-5
-// All animations are procedural (no embedded animation files)
-// ============================================================
+﻿// Procedural idle, talking, and blink animations.
 
 import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
 import * as THREE from 'three'
@@ -94,7 +90,7 @@ export class AnimationController {
     }
   }
 
-  /** Update animations — called each frame */
+  /** Update animations : called each frame */
   update(delta: number): void {
     this.elapsed += delta
     this.breathPhase += delta
@@ -128,7 +124,7 @@ export class AnimationController {
     }
   }
 
-  // ---- Blink (ANIM-3) ----
+  // Procedural blink animation
 
   private updateBlink(delta: number): void {
     this.blinkTimer += delta
@@ -195,17 +191,16 @@ export class AnimationController {
     }
   }
 
-  // ---- Idle Animation (ANIM-1) ----
-
+  // Procedural idle breathing and sway
   private updateIdle(delta: number): void {
-    // Breathing — subtle chest/spine movement
+    // Breathing : subtle chest/spine movement
     const breathAmount = Math.sin(this.breathPhase * 1.5) * 0.003
     const spine = this.vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Spine)
     if (spine) {
       spine.rotation.x += breathAmount
     }
 
-    // Subtle head movement — slow gentle sway
+    // Subtle head movement : slow gentle sway
     const head = this.vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Head)
     if (head && this.activeGesture !== 'nod') {
       head.rotation.y += Math.sin(this.bodySwayPhase * 0.8) * 0.03
@@ -228,8 +223,7 @@ export class AnimationController {
     }
   }
 
-  // ---- Talking Animation (ANIM-2) ----
-
+  // Procedural talking movement
   private updateTalking(delta: number): void {
     this.talkGesturePhase += delta
 
@@ -240,7 +234,7 @@ export class AnimationController {
       spine.rotation.x += breathAmount
     }
 
-    // Head nods and tilts — more animated when talking
+    // Head nods and tilts : more animated when talking
     const head = this.vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.Head)
     if (head && this.activeGesture !== 'nod') {
       head.rotation.x += Math.sin(this.talkGesturePhase * 2.5) * 0.02 - 0.02
@@ -270,7 +264,7 @@ export class AnimationController {
     }
   }
 
-  // ---- Gestures ----
+  // Gesture poses
   private applyGesture(delta: number): void {
     const leftUpperArm = this.vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.LeftUpperArm)
     const rightUpperArm = this.vrm.humanoid?.getNormalizedBoneNode(VRMHumanBoneName.RightUpperArm)
@@ -349,8 +343,6 @@ export class AnimationController {
   private lerp(start: number, end: number, factor: number): number {
     return start + (end - start) * factor
   }
-
-  // ---- Utilities ----
 
   private randomBlinkInterval(): number {
     // Random interval between 2-6 seconds
