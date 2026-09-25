@@ -1,7 +1,4 @@
-// ============================================================
-// Lip Sync Controller — Frequency band analysis
-// Implements LIPS-1, LIPS-2, LIPS-3
-// ============================================================
+﻿// Lip sync controller using audio frequency band analysis.
 
 import { VRM } from '@pixiv/three-vrm'
 
@@ -85,7 +82,7 @@ export class LipSyncController {
   }
 
   /**
-   * Update — called each frame
+   * Update : called each frame
    * Analyzes audio frequency and maps to A/I/U/E/O
    */
   update(delta: number): void {
