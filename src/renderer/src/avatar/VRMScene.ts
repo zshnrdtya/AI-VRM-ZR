@@ -1,7 +1,4 @@
-// ============================================================
-// VRM Scene — Three.js scene setup + VRM model loader
-// Implements AVTR-1, AVTR-2, AVTR-3, AVTR-4
-// ============================================================
+﻿// Three.js scene setup and VRM model loader.
 
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -22,7 +19,7 @@ export class VRMScene {
     this.scene = new THREE.Scene()
     this.clock = new THREE.Clock()
 
-    // Camera — positioned for upper body/face view
+    // Camera : positioned for upper body/face view
     this.camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 100)
     this.camera.position.set(0, 1.25, 2.2)
     this.camera.lookAt(0, 1.15, 0)
@@ -51,21 +48,21 @@ export class VRMScene {
   }
 
   private setupLighting(): void {
-    // Ambient light — soft fill
+    // Ambient light : soft fill
     const ambient = new THREE.AmbientLight(0xffffff, 0.7)
     this.scene.add(ambient)
 
-    // Main directional light — front-top
+    // Main directional light : front-top
     const mainLight = new THREE.DirectionalLight(0xfff5ee, 1.2)
     mainLight.position.set(1, 2, 3)
     this.scene.add(mainLight)
 
-    // Fill light — softer from left
+    // Fill light : softer from left
     const fillLight = new THREE.DirectionalLight(0xeef0ff, 0.5)
     fillLight.position.set(-2, 1, 1)
     this.scene.add(fillLight)
 
-    // Rim light — behind for separation
+    // Rim light : behind for separation
     const rimLight = new THREE.DirectionalLight(0xffd0e0, 0.4)
     rimLight.position.set(0, 1, -2)
     this.scene.add(rimLight)
