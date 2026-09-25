@@ -1,6 +1,4 @@
-// ============================================================
-// Shared types between Main and Renderer processes
-// ============================================================
+﻿// Shared types between Main and Renderer processes
 
 /** Application status states */
 export type AppStatus = 'initializing' | 'idle' | 'listening' | 'processing' | 'speaking' | 'error' | 
@@ -32,13 +30,13 @@ export interface AIResponse {
 export interface ToolCall {
   id: string
   name: string
-  args: Record<string, any>
+  args: Record<string, unknown>
 }
 
 /** Result of a Tool Call to send back to the LLM */
 export interface ToolResult {
   id: string
-  result: any
+  result: unknown
 }
 
 /** Conversation session */
@@ -62,7 +60,7 @@ export interface AppConfig {
   lastProjectFolder?: string
 }
 
-/** IPC channel names — single source of truth */
+/** IPC channel names : single source of truth */
 export const IPC_CHANNELS = {
   // Window management
   WINDOW_MOVE: 'window:move',
